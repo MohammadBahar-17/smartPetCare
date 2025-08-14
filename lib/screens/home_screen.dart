@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/camera_preview.dart';
 import '../widgets/control_card.dart.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final double foodLevel = 0.65;
   final double waterLevel = 0.35;
 
@@ -16,14 +22,47 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Manual Control Panel',
+              'Pet Monitor & Control',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF333333),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+
+            // 📹 CAMERA FEED CARD
+            Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.videocam, color: Colors.green, size: 28),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Live Camera Feed',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const CameraPreviewWidget(), // 👈 Using separate camera widget
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
 
             // 🥣 FOOD CONTROL CARD
             ControlCard(
@@ -36,7 +75,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Feeding your cat...'),
+                    content: Text('Feeding your pet...'),
                     duration: Duration(seconds: 2),
                   ),
                 );

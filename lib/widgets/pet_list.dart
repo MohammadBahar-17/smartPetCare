@@ -59,24 +59,24 @@ class PetList extends StatelessWidget {
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Icon(
-                                            pet.kind == PetKind.dog
-                                                ? Icons.pets
-                                                : Icons
-                                                      .pets_outlined, // Cat icon
-                                            size: 30,
-                                            color: pet.kind == PetKind.dog
-                                                ? Colors.blue[700]
-                                                : Colors.green[700],
-                                          );
-                                        },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Icon(
+                                                pet.kind == PetKind.dog
+                                                    ? Icons.pets_rounded
+                                                    : Icons.pets_outlined,
+                                                size: 30,
+                                                color: pet.kind == PetKind.dog
+                                                    ? Colors.blue[700]
+                                                    : Colors.green[700],
+                                              );
+                                            },
                                       ),
                                     )
                                   : Icon(
                                       pet.kind == PetKind.dog
-                                          ? Icons.pets
-                                          : Icons.pets_outlined, // Cat icon
+                                          ? Icons.pets_rounded
+                                          : Icons.pets_outlined,
                                       size: 30,
                                       color: pet.kind == PetKind.dog
                                           ? Colors.blue[700]
