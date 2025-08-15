@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/pet.dart';
@@ -48,12 +49,21 @@ class _NewPetState extends State<NewPet> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Missing Data'),
-          content: const Text('Please fill in all fields with valid data.'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Missing Data',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            'Please fill in all fields with valid data.',
+            style: GoogleFonts.poppins(),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: Text('OK', style: GoogleFonts.poppins()),
             ),
           ],
         ),
@@ -80,9 +90,7 @@ class _NewPetState extends State<NewPet> {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: DateTime.now().subtract(const Duration(days: 365)),
-      firstDate: DateTime.now().subtract(
-        const Duration(days: 365 * 20),
-      ), // 20 years ago
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 20)),
       lastDate: DateTime.now(),
     );
     setState(() {
@@ -90,111 +98,118 @@ class _NewPetState extends State<NewPet> {
     });
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    _weightController.dispose();
-    _breedController.dispose();
-    super.dispose();
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: const Color(0xFF6B73FF)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+      filled: true,
+      fillColor: Colors.grey[100],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(20.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Add New Pet',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF6B73FF),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             // Pet Name
             TextField(
               controller: _nameController,
               maxLength: 50,
-              decoration: const InputDecoration(
-                labelText: 'Pet Name',
-                hintText: 'e.g., Fluffy, Max',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.pets),
-              ),
+              style: GoogleFonts.poppins(),
+              decoration: _inputDecoration('Pet Name', Icons.pets),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Kind Selection
-            const Text(
+            // Pet Type
+            Text(
               'Pet Type',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
             Row(
               children: [
                 Expanded(
                   child: RadioListTile<PetKind>(
-                    title: const Text('Cat'),
+                    title: Text('Cat', style: GoogleFonts.poppins()),
                     value: PetKind.cat,
                     groupValue: _selectedKind,
+                    activeColor: const Color(0xFFFF6B9D),
                     onChanged: (value) =>
                         setState(() => _selectedKind = value!),
                   ),
                 ),
                 Expanded(
                   child: RadioListTile<PetKind>(
-                    title: const Text('Dog'),
+                    title: Text('Dog', style: GoogleFonts.poppins()),
                     value: PetKind.dog,
                     groupValue: _selectedKind,
+                    activeColor: const Color(0xFFFF6B9D),
                     onChanged: (value) =>
                         setState(() => _selectedKind = value!),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Sex Selection
-            const Text(
+            // Gender
+            Text(
               'Gender',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
             Row(
               children: [
                 Expanded(
                   child: RadioListTile<PetSex>(
-                    title: const Text('Male'),
+                    title: Text('Male', style: GoogleFonts.poppins()),
                     value: PetSex.male,
                     groupValue: _selectedSex,
+                    activeColor: const Color(0xFF6B73FF),
                     onChanged: (value) => setState(() => _selectedSex = value!),
                   ),
                 ),
                 Expanded(
                   child: RadioListTile<PetSex>(
-                    title: const Text('Female'),
+                    title: Text('Female', style: GoogleFonts.poppins()),
                     value: PetSex.female,
                     groupValue: _selectedSex,
+                    activeColor: const Color(0xFF6B73FF),
                     onChanged: (value) => setState(() => _selectedSex = value!),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Age and Weight
+            // Age & Weight
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _ageController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Age (years)',
-                      hintText: 'e.g., 3',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.calendar_today),
+                    style: GoogleFonts.poppins(),
+                    decoration: _inputDecoration(
+                      'Age (years)',
+                      Icons.calendar_today,
                     ),
                   ),
                 ),
@@ -203,11 +218,10 @@ class _NewPetState extends State<NewPet> {
                   child: TextField(
                     controller: _weightController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Weight (kg)',
-                      hintText: 'e.g., 4.5',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.monitor_weight),
+                    style: GoogleFonts.poppins(),
+                    decoration: _inputDecoration(
+                      'Weight (kg)',
+                      Icons.monitor_weight,
                     ),
                   ),
                 ),
@@ -219,70 +233,100 @@ class _NewPetState extends State<NewPet> {
             TextField(
               controller: _breedController,
               maxLength: 50,
-              decoration: const InputDecoration(
-                labelText: 'Breed',
-                hintText: 'e.g., Persian, Golden Retriever',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.category),
-              ),
+              style: GoogleFonts.poppins(),
+              decoration: _inputDecoration('Breed', Icons.category),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Pet Photo
+            // Photo Picker
             Row(
               children: [
                 _selectedImage != null
                     ? CircleAvatar(
-                        radius: 32,
+                        radius: 36,
                         backgroundImage: FileImage(_selectedImage!),
                       )
                     : const CircleAvatar(
-                        radius: 32,
-                        child: Icon(Icons.pets, size: 32),
+                        radius: 36,
+                        child: Icon(Icons.pets, size: 30),
                       ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   onPressed: _pickImage,
                   icon: const Icon(Icons.photo_camera),
-                  label: const Text('Add Photo'),
+                  label: Text('Add Photo', style: GoogleFonts.poppins()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF9C27B0),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Date of Birth
+            // Date Picker
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: _presentDatePicker,
-                icon: const Icon(Icons.cake),
-                label: _selectedDateOfBirth == null
-                    ? const Text('Select Date of Birth')
-                    : Text(
-                        'Born: ${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.year}',
-                      ),
+                icon: const Icon(Icons.cake, color: Color(0xFF6B73FF)),
+                label: Text(
+                  _selectedDateOfBirth == null
+                      ? 'Select Date of Birth'
+                      : 'Born: ${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}/${_selectedDateOfBirth!.year}',
+                  style: GoogleFonts.poppins(),
+                ),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  side: const BorderSide(color: Color(0xFF6B73FF)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Save and Cancel buttons
+            // Save / Cancel
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color(0xFFFF6B9D),
                       foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    child: const Text('Save Pet'),
+                    child: Text(
+                      'Save Pet',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
+                    ),
                   ),
                 ),
               ],

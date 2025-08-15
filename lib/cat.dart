@@ -1,13 +1,15 @@
-import 'package:smart_pet_care/screens/home_screen.dart';
-import 'package:smart_pet_care/screens/schedule_meals_screen.dart';
-import 'package:smart_pet_care/screens/pets_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
+import 'package:smart_pet_care/screens/ai_chat.dart';
+import 'package:smart_pet_care/screens/home_screen.dart';
+import 'package:smart_pet_care/screens/pets_screen.dart';
+import 'package:smart_pet_care/screens/schedule_meals_screen.dart';
 import 'models/meal.dart';
 import 'models/pet.dart';
 
 class Cat extends StatefulWidget {
   const Cat({super.key});
+
   @override
   State<Cat> createState() => _CatState();
 }
@@ -61,26 +63,20 @@ class _CatState extends State<Cat> {
       _registeredMeals.remove(meal);
     });
 
-    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.grey[900],
-        elevation: 8,
+        backgroundColor: Colors.grey[850],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         duration: const Duration(seconds: 3),
         content: const Text(
           'Meal deleted',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(
           label: 'UNDO',
-          textColor: Colors.greenAccent,
+          textColor: Colors.pinkAccent,
           onPressed: () {
             setState(() {
               _registeredMeals.insert(deletedIndex, meal);
@@ -103,26 +99,20 @@ class _CatState extends State<Cat> {
       _registeredPets.remove(pet);
     });
 
-    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.grey[900],
-        elevation: 8,
+        backgroundColor: Colors.grey[850],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         duration: const Duration(seconds: 3),
         content: Text(
           '${pet.name} deleted',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
         action: SnackBarAction(
           label: 'UNDO',
-          textColor: Colors.greenAccent,
+          textColor: Colors.pinkAccent,
           onPressed: () {
             setState(() {
               _registeredPets.insert(deletedIndex, pet);
@@ -136,50 +126,77 @@ class _CatState extends State<Cat> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cat Care System',
-      theme: ThemeData(primarySwatch: Colors.orange, useMaterial3: true),
+      title: 'Pet Care System',
+      theme: ThemeData(
+        useMaterial3: true,
+        textTheme: GoogleFonts.poppinsTextTheme(),
+      ),
       home: DefaultTabController(
-        length: 4, // Changed from 3 to 4
+        length: 5,
         child: Scaffold(
-          appBar: AppBar(
-            title: const Center(child: Text('Pet Care System')),
-            backgroundColor: Colors.orange[400],
-            foregroundColor: Colors.white,
-          ),
+          backgroundColor: const Color(0xFFFFF8F0), // soft warm background
           body: Column(
             children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 50, bottom: 16),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6B73FF), Color(0xFF9DD5FF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    "Pet Care System",
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              // 🐾 Modern Tab Bar
               const TabBar(
-                labelColor: Colors.orange,
+                labelColor: Color(0xFF9C27B0),
                 unselectedLabelColor: Colors.grey,
-                isScrollable: true, // Added to handle 4 tabs better
+                indicatorColor: Color(0xFF9C27B0),
+                isScrollable: true,
                 tabs: [
                   Tab(icon: Icon(Icons.home), text: 'Home'),
                   Tab(icon: Icon(Icons.schedule), text: 'Schedule Meals'),
-                  Tab(icon: Icon(Icons.pets), text: 'Pets'), // New tab
+                  Tab(icon: Icon(Icons.pets), text: 'Pets'),
                   Tab(icon: Icon(Icons.smart_toy), text: 'Ask AI'),
+                  Tab(icon: Icon(Icons.add_alert), text: 'notifications'),
                 ],
               ),
+
               Expanded(
                 child: TabBarView(
                   children: [
-                    const HomeScreen(),
+                    HomeScreen(),
                     ScheduleMealsScreen(
                       onAdd: _addMeals,
                       onRemove: _removeMeals,
                       registeredMeals: _registeredMeals,
                     ),
                     PetsScreen(
-                      // New pets screen
                       onAdd: _addPets,
                       onRemove: _removePets,
                       registeredPets: _registeredPets,
                     ),
-                    const Center(
-                      child: Text(
-                        'AI Assistant Coming Soon!',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
+                    AiChatScreen(),
+                    Center(child: Text('No Notifications today')),
                   ],
                 ),
               ),
