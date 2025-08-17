@@ -16,7 +16,6 @@ class _EfficientCameraPreviewState extends State<EfficientCameraPreview>
   bool _isCameraInitialized = false;
   bool _isDisposed = false;
   Timer? _frameSkipTimer;
-  int _frameSkipCount = 0;
   static const int _skipFramesCount = 3; // Skip 3 out of 4 frames
 
   @override
