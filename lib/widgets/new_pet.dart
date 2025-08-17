@@ -256,7 +256,7 @@ class _NewPetState extends State<NewPet> {
                   icon: const Icon(Icons.photo_camera),
                   label: Text('Add Photo', style: GoogleFonts.poppins()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF9C27B0),
+                    backgroundColor: const Color(0xFFFF6B9D),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),

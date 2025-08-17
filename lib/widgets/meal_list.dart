@@ -38,12 +38,15 @@ class MealList extends StatelessWidget {
                   ),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Colors.orange[100],
-                      child: Icon(Icons.restaurant, color: Colors.orange[700]),
+                      backgroundColor: const Color(0xFFFFC107).withOpacity(0.1),
+                      child: Icon(
+                        Icons.restaurant,
+                        color: const Color(0xFFFFC107),
+                      ),
                     ),
                     title: Text(
                       meal.title,
@@ -62,7 +65,7 @@ class MealList extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange[50],
+                        color: const Color(0xFFFFC107).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -70,7 +73,7 @@ class MealList extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.orange[700],
+                          color: const Color(0xFFFFC107),
                         ),
                       ),
                     ),
@@ -97,11 +100,11 @@ class MealList extends StatelessWidget {
               icon: const Icon(Icons.smart_toy),
               label: const Text('Do it using AI'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: const Color(0xFF6B73FF),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../theme/app_theme.dart';
 
 class ControlCard extends StatelessWidget {
   final String title;
@@ -9,6 +9,7 @@ class ControlCard extends StatelessWidget {
   final Color levelColor;
   final String levelLabel;
   final VoidCallback onPressed;
+  final bool isCompact;
 
   const ControlCard({
     super.key,
@@ -19,48 +20,50 @@ class ControlCard extends StatelessWidget {
     required this.levelColor,
     required this.levelLabel,
     required this.onPressed,
+    this.isCompact = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Create a soft gradient using levelColor
-    final gradientColors = [
-      levelColor.withOpacity(0.9),
-      levelColor.withOpacity(0.6),
-    ];
+    if (isCompact) {
+      return _buildCompactCard(context);
+    } else {
+      return _buildFullCard(context);
+    }
+  }
 
+  Widget _buildCompactCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: gradientColors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: levelColor.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: AppTheme.cardBackground,
+        borderRadius: AppTheme.cardRadius,
+        boxShadow: AppTheme.cardShadow,
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title Row
+          // Header
           Row(
             children: [
-              Icon(icon, size: 28, color: Colors.white),
-              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: levelColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: levelColor,
+                ),
+              ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -68,63 +71,161 @@ class ControlCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Level Label
-          Text(
-            levelLabel,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.9),
-            ),
-          ),
-          const SizedBox(height: 6),
-
-          // Progress Bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: level,
-              minHeight: 10,
-              backgroundColor: Colors.white.withOpacity(0.3),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-          const SizedBox(height: 6),
-
-          // Level Percentage
-          Text(
-            '${(level * 100).toInt()}% full',
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
+          // Level indicator
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      levelLabel,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    LinearProgressIndicator(
+                      value: level,
+                      backgroundColor: levelColor.withOpacity(0.2),
+                      valueColor: AlwaysStoppedAnimation<Color>(levelColor),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${(level * 100).toInt()}%',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: levelColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
 
           // Button
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
               onPressed: onPressed,
-              icon: Icon(icon, size: 20, color: levelColor),
-              label: Text(
-                buttonText,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w500,
-                  color: levelColor,
+              style: FilledButton.styleFrom(
+                backgroundColor: levelColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: AppTheme.buttonRadius,
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: levelColor,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
+              child: Text(
+                buttonText,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Colors.white,
                 ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullCard(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: AppTheme.cardRadius,
+        boxShadow: AppTheme.cardShadow,
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title Row
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [levelColor, levelColor.withOpacity(0.8)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Level Section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: levelColor.withOpacity(0.1),
+              borderRadius: AppTheme.buttonRadius,
+              border: Border.all(
+                color: levelColor.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      levelLabel,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      '${(level * 100).toInt()}%',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: levelColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                LinearProgressIndicator(
+                  value: level,
+                  backgroundColor: levelColor.withOpacity(0.2),
+                  valueColor: AlwaysStoppedAnimation<Color>(levelColor),
+                  borderRadius: BorderRadius.circular(6),
+                  minHeight: 8,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Action Button
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onPressed,
+              icon: Icon(icon, size: 20),
+              label: Text(buttonText),
+              style: FilledButton.styleFrom(
+                backgroundColor: levelColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppTheme.buttonRadius,
                 ),
-                elevation: 3,
               ),
             ),
           ),

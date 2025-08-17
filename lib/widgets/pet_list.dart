@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import '../models/pet.dart';
 
 class PetList extends StatelessWidget {
@@ -8,186 +9,208 @@ class PetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: pets.length,
-            itemBuilder: (context, index) {
-              final pet = pets[index];
-              return Dismissible(
-                key: ValueKey(pet.id),
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(
-                    Icons.delete,
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: pets.length,
+      itemBuilder: (context, index) {
+        final pet = pets[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Dismissible(
+            key: ValueKey(pet.id),
+            background: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.error,
+                borderRadius: AppTheme.cardRadius,
+              ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 24),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.delete_rounded,
                     color: Colors.white,
-                    size: 32,
+                    size: 28,
                   ),
-                ),
-                confirmDismiss: (direction) async {
-                  onRemove(pet, context);
-                  return false; // Prevent automatic dismissal
-                },
-                child: Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                  SizedBox(height: 4),
+                  Text(
+                    'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ],
+              ),
+            ),
+            confirmDismiss: (direction) async {
+              onRemove(pet, context);
+              return false; // Prevent automatic dismissal
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.cardBackground,
+                borderRadius: AppTheme.cardRadius,
+                boxShadow: AppTheme.cardShadow,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundColor: pet.kind == PetKind.dog
-                                  ? Colors.blue[100]
-                                  : Colors.green[100],
-                              child: pet.photo != null
-                                  ? ClipOval(
-                                      child: Image.asset(
-                                        pet.photo!,
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                              return Icon(
-                                                pet.kind == PetKind.dog
-                                                    ? Icons.pets_rounded
-                                                    : Icons.pets_outlined,
-                                                size: 30,
-                                                color: pet.kind == PetKind.dog
-                                                    ? Colors.blue[700]
-                                                    : Colors.green[700],
-                                              );
-                                            },
-                                      ),
-                                    )
-                                  : Icon(
-                                      pet.kind == PetKind.dog
-                                          ? Icons.pets_rounded
-                                          : Icons.pets_outlined,
-                                      size: 30,
-                                      color: pet.kind == PetKind.dog
-                                          ? Colors.blue[700]
-                                          : Colors.green[700],
-                                    ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        pet.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: pet.kind == PetKind.dog
-                                              ? Colors.blue[50]
-                                              : Colors.green[50],
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          pet.kindDisplay,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: pet.kind == PetKind.dog
-                                                ? Colors.blue[700]
-                                                : Colors.green[700],
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                        // Pet Avatar
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            gradient: pet.kind == PetKind.dog
+                                ? AppTheme.primaryGradient
+                                : AppTheme.greenGradient,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (pet.kind == PetKind.dog 
+                                    ? AppTheme.primaryBlue 
+                                    : AppTheme.softGreen).withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: pet.photo != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    pet.photo!,
+                                    width: 64,
+                                    height: 64,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return _buildDefaultIcon(pet);
+                                    },
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    pet.breed,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                      fontStyle: FontStyle.italic,
+                                )
+                              : _buildDefaultIcon(pet),
+                        ),
+                        const SizedBox(width: 16),
+                        
+                        // Pet Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      pet.name,
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: (pet.kind == PetKind.dog 
+                                          ? AppTheme.primaryBlue 
+                                          : AppTheme.softGreen).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      pet.kindDisplay,
+                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: pet.kind == PetKind.dog 
+                                            ? AppTheme.primaryBlue 
+                                            : AppTheme.softGreen,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _InfoChip(
-                                icon: Icons.calendar_today,
-                                label: '${pet.age} years',
-                                color: Colors.orange,
+                              const SizedBox(height: 4),
+                              Text(
+                                pet.breed,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppTheme.textSecondary,
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _InfoChip(
-                                icon: pet.sex == PetSex.male
-                                    ? Icons.male
-                                    : Icons.female,
-                                label: pet.sexDisplay,
-                                color: pet.sex == PetSex.male
-                                    ? Colors.blue
-                                    : Colors.pink,
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Spacer(),
+                                  Text(
+                                    '${pet.age} years old',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppTheme.textLight,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _InfoChip(
-                                icon: Icons.monitor_weight,
-                                label: '${pet.weight} kg',
-                                color: Colors.purple,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Born: ${pet.dateOfBirth.day.toString().padLeft(2, '0')}/${pet.dateOfBirth.month.toString().padLeft(2, '0')}/${pet.dateOfBirth.year}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    
+                    // Pet Stats
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _InfoChip(
+                            icon: pet.sex == PetSex.male ? Icons.male_rounded : Icons.female_rounded,
+                            label: pet.sexDisplay,
+                            color: pet.sex == PetSex.male ? AppTheme.primaryBlue : AppTheme.coralPink,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _InfoChip(
+                            icon: Icons.monitor_weight_rounded,
+                            label: '${pet.weight} kg',
+                            color: AppTheme.warmYellow,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _InfoChip(
+                            icon: Icons.cake_rounded,
+                            label: _formatDate(pet.dateOfBirth),
+                            color: AppTheme.lavender,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+            ),
           ),
-        ),
-      ],
+        );
+      },
     );
+  }
+
+  Widget _buildDefaultIcon(Pet pet) {
+    return Icon(
+      pet.kind == PetKind.dog ? Icons.pets_rounded : Icons.pets_outlined,
+      size: 32,
+      color: Colors.white,
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 }
 
@@ -205,23 +228,30 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
-        color: color.withAlpha((0.1 * 255).toInt()),
-        borderRadius: BorderRadius.circular(8),
+        color: color.withOpacity(0.1),
+        borderRadius: AppTheme.buttonRadius,
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: color),
+          Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.w600,
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
