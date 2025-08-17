@@ -53,7 +53,7 @@ class _OptimizedCameraPreviewState extends State<OptimizedCameraPreview>
 
     try {
       _cameras = await availableCameras();
-      
+
       if (_cameras == null || _cameras!.isEmpty) {
         if (mounted) {
           setState(() {
@@ -81,7 +81,7 @@ class _OptimizedCameraPreviewState extends State<OptimizedCameraPreview>
       );
 
       await _cameraController!.initialize();
-      
+
       if (_isDisposed) {
         await _cameraController!.dispose();
         return;
@@ -152,7 +152,10 @@ class _OptimizedCameraPreviewState extends State<OptimizedCameraPreview>
               top: 16,
               right: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(20),
@@ -194,21 +197,14 @@ class _OptimizedCameraPreviewState extends State<OptimizedCameraPreview>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.grey[300]!,
-            Colors.grey[400]!,
-          ],
+          colors: [Colors.grey[300]!, Colors.grey[400]!],
         ),
       ),
       child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.camera_alt,
-              size: 48,
-              color: Colors.grey,
-            ),
+            Icon(Icons.camera_alt, size: 48, color: Colors.grey),
             SizedBox(height: 12),
             Text(
               'Camera Initializing...',
@@ -235,10 +231,12 @@ class _FrameLimitedCameraPreview extends StatefulWidget {
   });
 
   @override
-  State<_FrameLimitedCameraPreview> createState() => _FrameLimitedCameraPreviewState();
+  State<_FrameLimitedCameraPreview> createState() =>
+      _FrameLimitedCameraPreviewState();
 }
 
-class _FrameLimitedCameraPreviewState extends State<_FrameLimitedCameraPreview> {
+class _FrameLimitedCameraPreviewState
+    extends State<_FrameLimitedCameraPreview> {
   @override
   Widget build(BuildContext context) {
     // Only show camera preview if frame limit not exceeded
@@ -246,11 +244,7 @@ class _FrameLimitedCameraPreviewState extends State<_FrameLimitedCameraPreview> 
       return Container(
         color: Colors.black,
         child: const Center(
-          child: Icon(
-            Icons.videocam,
-            color: Colors.white54,
-            size: 32,
-          ),
+          child: Icon(Icons.videocam, color: Colors.white54, size: 32),
         ),
       );
     }

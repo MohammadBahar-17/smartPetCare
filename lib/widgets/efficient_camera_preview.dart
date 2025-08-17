@@ -52,7 +52,7 @@ class _EfficientCameraPreviewState extends State<EfficientCameraPreview>
 
     try {
       _cameras = await availableCameras();
-      
+
       if (_cameras == null || _cameras!.isEmpty) {
         if (mounted) {
           setState(() {
@@ -80,7 +80,7 @@ class _EfficientCameraPreviewState extends State<EfficientCameraPreview>
       );
 
       await _cameraController!.initialize();
-      
+
       if (_isDisposed) {
         await _cameraController!.dispose();
         return;
@@ -138,7 +138,10 @@ class _EfficientCameraPreviewState extends State<EfficientCameraPreview>
               top: 16,
               right: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.8),
                   borderRadius: BorderRadius.circular(20),
@@ -180,21 +183,14 @@ class _EfficientCameraPreviewState extends State<EfficientCameraPreview>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.grey[300]!,
-            Colors.grey[400]!,
-          ],
+          colors: [Colors.grey[300]!, Colors.grey[400]!],
         ),
       ),
       child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.camera_alt,
-              size: 48,
-              color: Colors.grey,
-            ),
+            Icon(Icons.camera_alt, size: 48, color: Colors.grey),
             SizedBox(height: 12),
             Text(
               'Camera Loading...',
@@ -221,7 +217,8 @@ class _ThrottledCameraPreview extends StatefulWidget {
   });
 
   @override
-  State<_ThrottledCameraPreview> createState() => _ThrottledCameraPreviewState();
+  State<_ThrottledCameraPreview> createState() =>
+      _ThrottledCameraPreviewState();
 }
 
 class _ThrottledCameraPreviewState extends State<_ThrottledCameraPreview> {
@@ -236,7 +233,7 @@ class _ThrottledCameraPreviewState extends State<_ThrottledCameraPreview> {
       // Return cached frame or black screen
       return _lastFrame ?? Container(color: Colors.black);
     }
-    
+
     // Reset counter and show new frame
     _frameCount = 0;
     _lastFrame = CameraPreview(widget.controller);

@@ -3,11 +3,8 @@ import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   final VoidCallback onComplete;
-  
-  const SplashScreen({
-    super.key,
-    required this.onComplete,
-  });
+
+  const SplashScreen({super.key, required this.onComplete});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -27,21 +24,13 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
+    );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _animationController.forward();
 
@@ -61,9 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
         child: SafeArea(
           child: Center(
             child: Column(
@@ -106,10 +93,11 @@ class _SplashScreenState extends State<SplashScreen>
                     children: [
                       Text(
                         'Smart Pet Care',
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.displayMedium
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(

@@ -42,9 +42,7 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.backgroundGradient,
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: Column(
         children: [
           // Header Section
@@ -79,9 +77,8 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
                         children: [
                           Text(
                             'Meal Schedule',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             'Manage your pet\'s feeding times',
@@ -100,9 +97,9 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
                     icon: const Icon(Icons.add_rounded, size: 20),
                     label: Text(
                       'Add New Meal',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: Colors.white),
                     ),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppTheme.warmYellow,
@@ -151,10 +148,11 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
                                 ),
                                 child: Text(
                                   '${widget.registeredMeals.length} meals',
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: AppTheme.warmYellow,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(
+                                        color: AppTheme.warmYellow,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ),
                             ],
@@ -163,7 +161,8 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
                         Expanded(
                           child: MealList(
                             meals: widget.registeredMeals,
-                            onRemove: (meal, context) => widget.onRemove(meal, context),
+                            onRemove: (meal, context) =>
+                                widget.onRemove(meal, context),
                           ),
                         ),
                       ],
@@ -196,9 +195,9 @@ class _ScheduleMealsScreenState extends State<ScheduleMealsScreen> {
           const SizedBox(height: 24),
           Text(
             'No meals scheduled yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: AppTheme.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),

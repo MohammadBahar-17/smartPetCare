@@ -51,9 +51,7 @@ class _PetsScreenState extends State<PetsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.backgroundGradient,
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: Column(
         children: [
           // Header Section
@@ -88,9 +86,8 @@ class _PetsScreenState extends State<PetsScreen> {
                         children: [
                           Text(
                             'My Pets',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             'Manage your beloved companions',
@@ -109,9 +106,9 @@ class _PetsScreenState extends State<PetsScreen> {
                     icon: const Icon(Icons.add_rounded, size: 20),
                     label: Text(
                       'Add New Pet',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: Colors.white),
                     ),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppTheme.coralPink,
@@ -160,10 +157,11 @@ class _PetsScreenState extends State<PetsScreen> {
                                 ),
                                 child: Text(
                                   '${widget.registeredPets.length} pets',
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: AppTheme.coralPink,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(
+                                        color: AppTheme.coralPink,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ),
                             ],
@@ -172,7 +170,8 @@ class _PetsScreenState extends State<PetsScreen> {
                         Expanded(
                           child: PetList(
                             pets: widget.registeredPets,
-                            onRemove: (pet, context) => widget.onRemove(pet, context),
+                            onRemove: (pet, context) =>
+                                widget.onRemove(pet, context),
                           ),
                         ),
                       ],
@@ -205,9 +204,9 @@ class _PetsScreenState extends State<PetsScreen> {
           const SizedBox(height: 24),
           Text(
             'No pets registered yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: AppTheme.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),

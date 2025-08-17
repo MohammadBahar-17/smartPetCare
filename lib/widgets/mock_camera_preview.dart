@@ -8,7 +8,7 @@ class MockCameraPreview extends StatefulWidget {
   State<MockCameraPreview> createState() => _MockCameraPreviewState();
 }
 
-class _MockCameraPreviewState extends State<MockCameraPreview> 
+class _MockCameraPreviewState extends State<MockCameraPreview>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
@@ -20,14 +20,10 @@ class _MockCameraPreviewState extends State<MockCameraPreview>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    
-    _pulseAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -73,7 +69,7 @@ class _MockCameraPreviewState extends State<MockCameraPreview>
                 ),
               ),
             ),
-            
+
             // Mock pet silhouette
             Center(
               child: AnimatedBuilder(
@@ -98,10 +94,11 @@ class _MockCameraPreviewState extends State<MockCameraPreview>
                           const SizedBox(height: 8),
                           Text(
                             'Pet Monitor',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppTheme.primaryBlue,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: AppTheme.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ],
                       ),
@@ -118,7 +115,10 @@ class _MockCameraPreviewState extends State<MockCameraPreview>
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(12),
@@ -144,10 +144,11 @@ class _MockCameraPreviewState extends State<MockCameraPreview>
                         const SizedBox(width: 4),
                         Text(
                           'LIVE',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ],
                     ),

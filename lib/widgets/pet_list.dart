@@ -29,11 +29,7 @@ class PetList extends StatelessWidget {
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.delete_rounded,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  Icon(Icons.delete_rounded, color: Colors.white, size: 28),
                   SizedBox(height: 4),
                   Text(
                     'Delete',
@@ -73,9 +69,11 @@ class PetList extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: (pet.kind == PetKind.dog 
-                                    ? AppTheme.primaryBlue 
-                                    : AppTheme.softGreen).withOpacity(0.3),
+                                color:
+                                    (pet.kind == PetKind.dog
+                                            ? AppTheme.primaryBlue
+                                            : AppTheme.softGreen)
+                                        .withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -97,7 +95,7 @@ class PetList extends StatelessWidget {
                               : _buildDefaultIcon(pet),
                         ),
                         const SizedBox(width: 16),
-                        
+
                         // Pet Info
                         Expanded(
                           child: Column(
@@ -108,9 +106,12 @@ class PetList extends StatelessWidget {
                                   Expanded(
                                     child: Text(
                                       pet.name,
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                   Container(
@@ -119,19 +120,24 @@ class PetList extends StatelessWidget {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: (pet.kind == PetKind.dog 
-                                          ? AppTheme.primaryBlue 
-                                          : AppTheme.softGreen).withOpacity(0.1),
+                                      color:
+                                          (pet.kind == PetKind.dog
+                                                  ? AppTheme.primaryBlue
+                                                  : AppTheme.softGreen)
+                                              .withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       pet.kindDisplay,
-                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: pet.kind == PetKind.dog 
-                                            ? AppTheme.primaryBlue 
-                                            : AppTheme.softGreen,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: pet.kind == PetKind.dog
+                                                ? AppTheme.primaryBlue
+                                                : AppTheme.softGreen,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -139,10 +145,11 @@ class PetList extends StatelessWidget {
                               const SizedBox(height: 4),
                               Text(
                                 pet.breed,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppTheme.textSecondary,
-                                  fontStyle: FontStyle.italic,
-                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: AppTheme.textSecondary,
+                                      fontStyle: FontStyle.italic,
+                                    ),
                               ),
                               const SizedBox(height: 8),
                               Row(
@@ -150,9 +157,8 @@ class PetList extends StatelessWidget {
                                   const Spacer(),
                                   Text(
                                     '${pet.age} years old',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppTheme.textLight,
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: AppTheme.textLight),
                                   ),
                                 ],
                               ),
@@ -162,15 +168,19 @@ class PetList extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Pet Stats
                     Row(
                       children: [
                         Expanded(
                           child: _InfoChip(
-                            icon: pet.sex == PetSex.male ? Icons.male_rounded : Icons.female_rounded,
+                            icon: pet.sex == PetSex.male
+                                ? Icons.male_rounded
+                                : Icons.female_rounded,
                             label: pet.sexDisplay,
-                            color: pet.sex == PetSex.male ? AppTheme.primaryBlue : AppTheme.coralPink,
+                            color: pet.sex == PetSex.male
+                                ? AppTheme.primaryBlue
+                                : AppTheme.coralPink,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -232,10 +242,7 @@ class _InfoChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: AppTheme.buttonRadius,
-        border: Border.all(
-          color: color.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.2), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

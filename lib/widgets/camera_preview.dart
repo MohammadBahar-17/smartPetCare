@@ -32,7 +32,7 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
         );
 
         await _cameraController!.initialize();
-        
+
         // Set buffer size to prevent overflow
         await _cameraController!.setFlashMode(FlashMode.off);
 
@@ -74,7 +74,10 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
       ),
       child: ClipRRect(
         borderRadius: AppTheme.buttonRadius,
-        child: _isCameraInitialized && _cameraController != null && _cameraController!.value.isInitialized
+        child:
+            _isCameraInitialized &&
+                _cameraController != null &&
+                _cameraController!.value.isInitialized
             ? Stack(
                 children: [
                   AspectRatio(
@@ -88,7 +91,10 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(12),
@@ -107,10 +113,11 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
                               const SizedBox(width: 4),
                               Text(
                                 'LIVE',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                             ],
                           ),
@@ -158,9 +165,9 @@ class _CameraPreviewWidgetState extends State<CameraPreviewWidget> {
           const SizedBox(height: 12),
           Text(
             'Camera Loading...',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 8),
           SizedBox(

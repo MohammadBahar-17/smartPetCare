@@ -9,17 +9,17 @@ class AppTheme {
   static const Color warmYellow = Color(0xFFFBBF24); // Warm yellow
   static const Color coralPink = Color(0xFFF472B6); // Coral pink
   static const Color lavender = Color(0xFFC084FC); // Soft lavender
-  
+
   // Background Colors
   static const Color backgroundPrimary = Color(0xFFFAFBFC); // Off-white
   static const Color backgroundSecondary = Color(0xFFF8FAFC); // Light gray
   static const Color cardBackground = Color(0xFFFFFFFF); // Pure white
-  
+
   // Text Colors
   static const Color textPrimary = Color(0xFF1F2937); // Dark gray
   static const Color textSecondary = Color(0xFF6B7280); // Medium gray
   static const Color textLight = Color(0xFF9CA3AF); // Light gray
-  
+
   // Status Colors
   static const Color success = Color(0xFF10B981); // Green
   static const Color warning = Color(0xFFF59E0B); // Orange
@@ -80,7 +80,9 @@ class AppTheme {
 
   // Border Radius
   static const BorderRadius cardRadius = BorderRadius.all(Radius.circular(16));
-  static const BorderRadius buttonRadius = BorderRadius.all(Radius.circular(12));
+  static const BorderRadius buttonRadius = BorderRadius.all(
+    Radius.circular(12),
+  );
   static const BorderRadius modalRadius = BorderRadius.all(Radius.circular(20));
 
   // Material 3 Theme
@@ -248,11 +250,11 @@ class AppTheme {
           borderRadius: buttonRadius,
           borderSide: const BorderSide(color: primaryBlue, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        hintStyle: GoogleFonts.inter(
-          fontSize: 14,
-          color: textLight,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
         ),
+        hintStyle: GoogleFonts.inter(fontSize: 14, color: textLight),
       ),
     );
   }

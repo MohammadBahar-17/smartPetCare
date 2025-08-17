@@ -52,11 +52,7 @@ class ControlCard extends StatelessWidget {
                   color: levelColor.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: levelColor,
-                ),
+                child: Icon(icon, size: 20, color: levelColor),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -119,9 +115,9 @@ class ControlCard extends StatelessWidget {
               ),
               child: Text(
                 buttonText,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Colors.white,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -152,11 +148,7 @@ class ControlCard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: Colors.white,
-                ),
+                child: Icon(icon, size: 24, color: Colors.white),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -175,10 +167,7 @@ class ControlCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: levelColor.withOpacity(0.1),
               borderRadius: AppTheme.buttonRadius,
-              border: Border.all(
-                color: levelColor.withOpacity(0.2),
-                width: 1,
-              ),
+              border: Border.all(color: levelColor.withOpacity(0.2), width: 1),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

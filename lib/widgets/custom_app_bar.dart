@@ -41,7 +41,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    onPressed: onLeadingPressed ?? () => Navigator.of(context).pop(),
+                    onPressed:
+                        onLeadingPressed ?? () => Navigator.of(context).pop(),
                     icon: Icon(
                       leadingIcon ?? Icons.arrow_back_rounded,
                       color: Colors.white,
@@ -60,10 +61,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: 4),

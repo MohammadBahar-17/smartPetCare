@@ -7,9 +7,7 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.backgroundGradient,
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -89,10 +87,11 @@ class NotificationsScreen extends StatelessWidget {
                               ),
                               child: Text(
                                 'All caught up!',
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: AppTheme.success,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(
+                                      color: AppTheme.success,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                             ),
                           ],
@@ -118,9 +117,8 @@ class NotificationsScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               Text(
                                 'No notifications today',
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: AppTheme.textSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(color: AppTheme.textSecondary),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -166,7 +164,9 @@ class NotificationsScreen extends StatelessWidget {
                             onTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Reminder feature coming soon!'),
+                                  content: Text(
+                                    'Reminder feature coming soon!',
+                                  ),
                                 ),
                               );
                             },
@@ -218,11 +218,7 @@ class NotificationsScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            Icon(icon, color: Colors.white, size: 24),
             const SizedBox(height: 8),
             Text(
               label,

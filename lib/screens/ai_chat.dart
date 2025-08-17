@@ -24,9 +24,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.backgroundGradient,
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: Column(
         children: [
           // AI Header
@@ -55,10 +53,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     children: [
                       Text(
                         'AI Pet Assistant',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -71,7 +70,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -131,7 +133,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                               gradient: AppTheme.primaryGradient,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Text('🤖', style: TextStyle(fontSize: 18)),
+                            child: const Text(
+                              '🤖',
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
                           const SizedBox(width: 12),
                         ],
@@ -145,8 +150,12 @@ class _AiChatScreenState extends State<AiChatScreen> {
                               borderRadius: BorderRadius.only(
                                 topLeft: const Radius.circular(16),
                                 topRight: const Radius.circular(16),
-                                bottomLeft: Radius.circular(message.isUser ? 16 : 4),
-                                bottomRight: Radius.circular(message.isUser ? 4 : 16),
+                                bottomLeft: Radius.circular(
+                                  message.isUser ? 16 : 4,
+                                ),
+                                bottomRight: Radius.circular(
+                                  message.isUser ? 4 : 16,
+                                ),
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -161,21 +170,23 @@ class _AiChatScreenState extends State<AiChatScreen> {
                               children: [
                                 Text(
                                   message.text,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: message.isUser
-                                        ? Colors.white
-                                        : AppTheme.textPrimary,
-                                    height: 1.4,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: message.isUser
+                                            ? Colors.white
+                                            : AppTheme.textPrimary,
+                                        height: 1.4,
+                                      ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   _formatTimestamp(message.timestamp),
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: message.isUser
-                                        ? Colors.white.withOpacity(0.7)
-                                        : AppTheme.textLight,
-                                  ),
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: message.isUser
+                                            ? Colors.white.withOpacity(0.7)
+                                            : AppTheme.textLight,
+                                      ),
                                 ),
                               ],
                             ),
@@ -189,7 +200,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                               color: AppTheme.coralPink.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Text('👤', style: TextStyle(fontSize: 18)),
+                            child: const Text(
+                              '👤',
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
                         ],
                       ],
@@ -216,9 +230,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       controller: _messageController,
                       decoration: InputDecoration(
                         hintText: 'Ask about pet care or behavior...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textLight,
-                        ),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: AppTheme.textLight),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -244,7 +257,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   child: IconButton(
                     onPressed: _sendMessage,
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+                    icon: const Icon(
+                      Icons.send_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
                     padding: const EdgeInsets.all(12),
                   ),
                 ),
@@ -259,7 +276,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {

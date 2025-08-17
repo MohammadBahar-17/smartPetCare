@@ -134,10 +134,7 @@ class _CatState extends State<Cat> {
       title: 'Smart Pet Care',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(
-        registeredMeals: [],
-        registeredPets: [],
-      ),
+      home: const MainScreen(registeredMeals: [], registeredPets: []),
     );
   }
 }
@@ -166,7 +163,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _registeredMeals = List.from(widget.registeredMeals);
     _registeredPets = List.from(widget.registeredPets);
-    
+
     // Add sample data if empty
     if (_registeredMeals.isEmpty) {
       _registeredMeals.addAll([
@@ -289,9 +286,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.backgroundGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
         child: SafeArea(
           child: Column(
             children: [
@@ -325,16 +320,18 @@ class _MainScreenState extends State<MainScreen> {
                         children: [
                           Text(
                             'Smart Pet Care',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           Text(
                             'Your pet\'s companion',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.9),
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
                           ),
                         ],
                       ),

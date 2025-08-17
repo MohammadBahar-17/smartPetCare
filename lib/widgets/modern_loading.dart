@@ -29,10 +29,7 @@ class _ModernLoadingWidgetState extends State<ModernLoadingWidget>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
   }
 
   @override
@@ -77,9 +74,9 @@ class _ModernLoadingWidgetState extends State<ModernLoadingWidget>
           const SizedBox(height: 16),
           Text(
             widget.message!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -112,13 +109,12 @@ class _PulsingDotState extends State<PulsingDot>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this)
+      ..repeat(reverse: true);
+    _animation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

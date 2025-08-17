@@ -20,9 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: AppTheme.backgroundGradient,
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -44,17 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           'Good ${_getTimeOfDay()}!',
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Your pets are doing great today',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.white.withOpacity(0.9)),
                         ),
                       ],
                     ),
@@ -65,10 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Text(
-                      '🐾',
-                      style: TextStyle(fontSize: 32),
-                    ),
+                    child: const Text('🐾', style: TextStyle(fontSize: 32)),
                   ),
                 ],
               ),
@@ -111,7 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppTheme.success.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -130,10 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(width: 4),
                             Text(
                               'LIVE',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: AppTheme.success,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: AppTheme.success,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ],
                         ),
@@ -222,14 +221,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: entertainmentOn 
-                            ? AppTheme.success.withOpacity(0.2)
-                            : AppTheme.textLight.withOpacity(0.2),
+                          color: entertainmentOn
+                              ? AppTheme.success.withOpacity(0.2)
+                              : AppTheme.textLight.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           Icons.smart_toy_rounded,
-                          color: entertainmentOn ? AppTheme.success : AppTheme.textLight,
+                          color: entertainmentOn
+                              ? AppTheme.success
+                              : AppTheme.textLight,
                           size: 20,
                         ),
                       ),
@@ -248,17 +249,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              entertainmentOn ? 'System Active' : 'System Inactive',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: entertainmentOn ? AppTheme.success : AppTheme.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              entertainmentOn
+                                  ? 'System Active'
+                                  : 'System Inactive',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: entertainmentOn
+                                        ? AppTheme.success
+                                        : AppTheme.textSecondary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              entertainmentOn 
-                                ? 'Keeping your pet entertained'
-                                : 'Tap to activate entertainment',
+                              entertainmentOn
+                                  ? 'Keeping your pet entertained'
+                                  : 'Tap to activate entertainment',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
@@ -279,7 +285,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ? '🎮 Entertainment System activated'
                                     : '⏸️ Entertainment System deactivated',
                               ),
-                              backgroundColor: entertainmentOn ? AppTheme.success : AppTheme.warning,
+                              backgroundColor: entertainmentOn
+                                  ? AppTheme.success
+                                  : AppTheme.warning,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: AppTheme.buttonRadius,
