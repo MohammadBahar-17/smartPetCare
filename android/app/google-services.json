@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "678146329560",
+    "firebase_url": "https://smartcatcare-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "smartcatcare",
+    "storage_bucket": "smartcatcare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678146329560:android:ad98ff0d303e1776dbc0ad",
+        "android_client_info": {
+          "package_name": "com.example.smartpetcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4oEfPnlEYeFa8LlTyTacu5NMaYQhDC_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
