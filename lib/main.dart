@@ -65,10 +65,10 @@ class _TestHomeState extends State<TestHome> {
 
   // ------------------ SENSORS ------------------
   Future<void> loadSensors() async {
-    final dogFoodSnap = await db.child("sensors/dog_food_level").get();
-    final catFoodSnap = await db.child("sensors/cat_food_level").get();
-    final dogWeightSnap = await db.child("sensors/dog_weight").get();
-    final catWeightSnap = await db.child("sensors/cat_weight").get();
+    final dogFoodSnap = await db.child("feeding/sensors/dog_food_level").get();
+    final catFoodSnap = await db.child("feeding/sensors/cat_food_level").get();
+    final dogWeightSnap = await db.child("feeding/sensors/dog_weight").get();
+    final catWeightSnap = await db.child("feeding/sensors/cat_weight").get();
 
     final dishSnap = await db.child("water/sensors/dish_empty").get();
     final tankFullSnap = await db.child("water/sensors/tank_full").get();
@@ -78,21 +78,21 @@ class _TestHomeState extends State<TestHome> {
     final lowSnap = await db.child("water/alerts/water_low").get();
 
     setState(() {
-      dogFood = dogFoodSnap.value ?? 0;
-      catFood = catFoodSnap.value ?? 0;
-      dogWeight = (dogWeightSnap.value ?? 0).toDouble();
-      catWeight = (catWeightSnap.value ?? 0).toDouble();
+      dogFood = (dogFoodSnap.value as int?) ?? 0;
+      catFood = (catFoodSnap.value as int?) ?? 0;
+      dogWeight = ((dogWeightSnap.value as num?) ?? 0).toDouble();
+      catWeight = ((catWeightSnap.value as num?) ?? 0).toDouble();
 
       dishEmpty = dishSnap.value == true;
       tankFull = tankFullSnap.value == true;
-      tankPercent = tankPercentSnap.value ?? 0;
+      tankPercent = (tankPercentSnap.value as int?) ?? 0;
       waterLow = lowSnap.value == true;
     });
   }
 
   // ------------------ LOAD MEALS ------------------
   Future<void> loadMeals() async {
-    final mealsSnap = await db.child("meals").get();
+    final mealsSnap = await db.child("feeding/meals").get();
     if (mealsSnap.value is Map) {
       setState(() {
         meals = Map<String, dynamic>.from(mealsSnap.value as Map);
@@ -101,13 +101,13 @@ class _TestHomeState extends State<TestHome> {
   }
 
   Future<void> deleteMeal(String id) async {
-    await db.child("meals/$id").remove();
+    await db.child("feeding/meals/$id").remove();
     loadMeals();
   }
 
   Future<void> addMeal() async {
-    final id = db.child("meals").push().key;
-    await db.child("meals/$id").set({
+    final id = db.child("feeding/meals").push().key;
+    await db.child("feeding/meals/$id").set({
       "animal": "cat",
       "hour": 15,
       "minute": 20,
@@ -147,11 +147,11 @@ class _TestHomeState extends State<TestHome> {
 
   // ------------------ FOOD ACTIONS ------------------
   Future<void> feedDog() async {
-    await db.child("commands/feed_dog").set(1);
+    await db.child("feeding/commands/feed_dog").set(1);
   }
 
   Future<void> feedCat() async {
-    await db.child("commands/feed_cat").set(1);
+    await db.child("feeding/commands/feed_cat").set(1);
   }
 
   // ------------------ UI ------------------
