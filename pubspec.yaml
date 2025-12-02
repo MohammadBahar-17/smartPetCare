@@ -46,6 +46,7 @@ dependencies:
   web_socket_channel: ^3.0.3
   http: ^1.6.0
   flutter_mjpeg: ^2.0.4
+  flutter_secure_storage: ^9.2.4
 
 dependency_overrides:
   http: ^1.6.0
