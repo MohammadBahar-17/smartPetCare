@@ -12,6 +12,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:smartpetcare/services/ai_service.dart';
 
+import 'screens/logs_screen.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
@@ -92,6 +94,72 @@ class _FoodScreenState extends State<FoodScreen> {
   bool showFoodAlert = false;
   String foodAlertText = "";
 
+  bool _lastFoodAlertState = false;
+
+  List<String> dashboardTips = [];
+  bool dashboardOk = true;
+
+  Future<void> logCommand(String type, Map<String, dynamic> extra) async {
+    await db.child("logs/commands").push().set({
+      "type": type,
+      "ts": ServerValue.timestamp,
+      ...extra,
+    });
+  }
+
+  Future<void> logAlert(String type, Map<String, dynamic> extra) async {
+    await db.child("logs/alerts").push().set({
+      "type": type,
+      "ts": ServerValue.timestamp,
+      ...extra,
+    });
+  }
+
+  void buildDashboardTips() {
+    final tips = <String>[];
+
+    if (catFood < 20) {
+      tips.add("أكل القط منخفض: $catFood% (يفضل تعبئة قريبًا)");
+    }
+    if (dogFood < 20) {
+      tips.add("أكل الكلب منخفض: $dogFood% (يفضل تعبئة قريبًا)");
+    }
+
+    if (tips.isEmpty) tips.add("كل القراءات طبيعية ✅");
+
+    setState(() {
+      dashboardTips = tips;
+      dashboardOk = tips.length == 1 && tips.first.contains("طبيعية");
+    });
+  }
+
+  Widget dashboardCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Dashboard — الحالة الآن",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text("Cat Food: $catFood%"),
+            Text("Dog Food: $dogFood%"),
+            const Divider(),
+            const Text(
+              "توصيات تلقائية:",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            ...dashboardTips.map((t) => Text("• $t")).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget aiPanel() {
     return Card(
       child: Padding(
@@ -112,34 +180,65 @@ class _FoodScreenState extends State<FoodScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: aiLoading
-                  ? null
-                  : () async {
-                      final q = _qController.text.trim();
-                      if (q.isEmpty) return;
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: aiLoading
+                      ? null
+                      : () async {
+                          final q = _qController.text.trim();
 
-                      setState(() {
-                        aiLoading = true;
-                        aiAnswer = "";
-                        aiTips = [];
-                      });
+                          setState(() {
+                            aiLoading = true;
+                            aiAnswer = "";
+                            aiTips = [];
+                          });
 
-                      try {
-                        final data = await _ai.ask(q);
-                        setState(() {
-                          aiAnswer = (data["answer"] ?? "").toString();
-                          aiTips = (data["tips"] as List? ?? [])
-                              .map((e) => e.toString())
-                              .toList();
-                        });
-                      } catch (e) {
-                        setState(() => aiAnswer = "Error: $e");
-                      } finally {
-                        setState(() => aiLoading = false);
-                      }
-                    },
-              child: Text(aiLoading ? "..." : "اسأل"),
+                          try {
+                            final data = await _ai.ask(q);
+                            setState(() {
+                              aiAnswer = (data["answer"] ?? "").toString();
+                              aiTips = (data["tips"] as List? ?? [])
+                                  .map((e) => e.toString())
+                                  .toList();
+                            });
+                          } catch (e) {
+                            setState(() => aiAnswer = "Error: $e");
+                          } finally {
+                            setState(() => aiLoading = false);
+                          }
+                        },
+                  child: Text(aiLoading ? "..." : "اسأل"),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  onPressed: aiLoading
+                      ? null
+                      : () async {
+                          setState(() {
+                            aiLoading = true;
+                            aiAnswer = "";
+                            aiTips = [];
+                            _qController.clear();
+                          });
+
+                          try {
+                            final data = await _ai.ask("");
+                            setState(() {
+                              aiAnswer = (data["answer"] ?? "").toString();
+                              aiTips = (data["tips"] as List? ?? [])
+                                  .map((e) => e.toString())
+                                  .toList();
+                            });
+                          } catch (e) {
+                            setState(() => aiAnswer = "Error: $e");
+                          } finally {
+                            setState(() => aiLoading = false);
+                          }
+                        },
+                  child: const Text("ملخص الحالة"),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(aiAnswer),
@@ -171,7 +270,7 @@ class _FoodScreenState extends State<FoodScreen> {
 
   void listenFoodSensors() {
     _subFoodSensors?.cancel();
-    _subFoodSensors = db.child("feeding/sensors").onValue.listen((event) {
+    _subFoodSensors = db.child("feeding/sensors").onValue.listen((event) async {
       final data = event.snapshot.value as Map?;
       if (data == null) return;
 
@@ -189,6 +288,15 @@ class _FoodScreenState extends State<FoodScreen> {
         alertText = parts.join(" | ");
       }
 
+      if (shouldAlert && !_lastFoodAlertState) {
+        try {
+          await logAlert("low_food", {"cat_food": cat, "dog_food": dog});
+        } catch (e) {
+          debugPrint("logAlert error: $e");
+        }
+      }
+      _lastFoodAlertState = shouldAlert;
+
       if (!mounted) return;
       setState(() {
         dogFood = dog;
@@ -198,6 +306,10 @@ class _FoodScreenState extends State<FoodScreen> {
         showFoodAlert = shouldAlert;
         foodAlertText = alertText;
       });
+
+      if (mounted) {
+        buildDashboardTips();
+      }
     });
   }
 
@@ -292,6 +404,13 @@ class _FoodScreenState extends State<FoodScreen> {
 
   Future<void> feedCatNow() async {
     await db.child("feeding/commands/feed_cat").set(1);
+
+    try {
+      await logCommand("feed_cat", {"source": "flutter"});
+    } catch (e) {
+      debugPrint("logCommand error: $e");
+    }
+
     await Future.delayed(const Duration(seconds: 1));
     await db.child("feeding/commands/feed_cat").set(0);
   }
@@ -320,7 +439,20 @@ class _FoodScreenState extends State<FoodScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("🍗 Food / Meals / Profiles")),
+      appBar: AppBar(
+        title: const Text("🍗 Food / Meals / Profiles"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LogsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async => loadAll(),
         child: SingleChildScrollView(
@@ -329,6 +461,8 @@ class _FoodScreenState extends State<FoodScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              dashboardCard(),
+              const SizedBox(height: 16),
               if (showFoodAlert)
                 Card(
                   child: ListTile(
@@ -359,6 +493,8 @@ class _FoodScreenState extends State<FoodScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+
               const SizedBox(height: 10),
               const Text(
                 "=== PET PROFILES ===",
