@@ -88,6 +88,9 @@ class _FoodScreenState extends State<FoodScreen> {
 
   String aiAnswer = "";
   List<String> aiTips = [];
+  String aiIntent = "summary";
+  String aiSeverity = "low";
+  List<String> aiActions = [];
   bool aiLoading = false;
 
   StreamSubscription<DatabaseEvent>? _subFoodSensors;
@@ -160,6 +163,22 @@ class _FoodScreenState extends State<FoodScreen> {
     );
   }
 
+  Color sevColor(String s) {
+    if (s == "high") return Colors.red;
+    if (s == "medium") return Colors.orange;
+    return Colors.green;
+  }
+
+  void applyAiData(Map<String, dynamic> data) {
+    aiAnswer = (data["answer"] ?? "").toString();
+    aiTips = (data["tips"] as List? ?? []).map((e) => e.toString()).toList();
+    aiIntent = (data["intent"] ?? "summary").toString();
+    aiSeverity = (data["severity"] ?? "low").toString();
+    aiActions = (data["actions_suggested"] as List? ?? [])
+        .map((e) => e.toString())
+        .toList();
+  }
+
   Widget aiPanel() {
     return Card(
       child: Padding(
@@ -192,16 +211,14 @@ class _FoodScreenState extends State<FoodScreen> {
                             aiLoading = true;
                             aiAnswer = "";
                             aiTips = [];
+                            aiIntent = "summary";
+                            aiSeverity = "low";
+                            aiActions = [];
                           });
 
                           try {
                             final data = await _ai.ask(q);
-                            setState(() {
-                              aiAnswer = (data["answer"] ?? "").toString();
-                              aiTips = (data["tips"] as List? ?? [])
-                                  .map((e) => e.toString())
-                                  .toList();
-                            });
+                            setState(() => applyAiData(data));
                           } catch (e) {
                             setState(() => aiAnswer = "Error: $e");
                           } finally {
@@ -219,17 +236,15 @@ class _FoodScreenState extends State<FoodScreen> {
                             aiLoading = true;
                             aiAnswer = "";
                             aiTips = [];
+                            aiIntent = "summary";
+                            aiSeverity = "low";
+                            aiActions = [];
                             _qController.clear();
                           });
 
                           try {
                             final data = await _ai.ask("");
-                            setState(() {
-                              aiAnswer = (data["answer"] ?? "").toString();
-                              aiTips = (data["tips"] as List? ?? [])
-                                  .map((e) => e.toString())
-                                  .toList();
-                            });
+                            setState(() => applyAiData(data));
                           } catch (e) {
                             setState(() => aiAnswer = "Error: $e");
                           } finally {
@@ -243,7 +258,28 @@ class _FoodScreenState extends State<FoodScreen> {
             const SizedBox(height: 8),
             Text(aiAnswer),
             const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Chip(
+                  label: Text("Severity: $aiSeverity"),
+                  backgroundColor: sevColor(aiSeverity).withOpacity(0.15),
+                ),
+                Text("Intent: $aiIntent"),
+              ],
+            ),
+            const SizedBox(height: 8),
             ...aiTips.map((t) => Text("• $t")).toList(),
+            if (aiActions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              const Text(
+                "اقتراحات:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              ...aiActions.map((a) => Text("• $a")),
+            ],
           ],
         ),
       ),
