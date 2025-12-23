@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../services/firebase_service.dart';
 import '../../services/ai_service.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/constants/app_constants.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/severity_chip.dart';
@@ -76,13 +77,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final data = event.snapshot.value as Map?;
       if (data == null || !mounted) return;
 
+      final newDogFood = (data["dog_food_level"] as int?) ?? 0;
+      final newCatFood = (data["cat_food_level"] as int?) ?? 0;
+      
+      // Check if crossed critical threshold
+      final wasCritical = dogFood <= AppConstants.criticalFoodThreshold || 
+                          catFood <= AppConstants.criticalFoodThreshold;
+      final nowCritical = newDogFood <= AppConstants.criticalFoodThreshold || 
+                          newCatFood <= AppConstants.criticalFoodThreshold;
+      final shouldRefresh = !_isInitialLoading && (wasCritical != nowCritical);
+
       setState(() {
-        dogFood = (data["dog_food_level"] as int?) ?? 0;
-        catFood = (data["cat_food_level"] as int?) ?? 0;
+        dogFood = newDogFood;
+        catFood = newCatFood;
         dogWeight = ((data["dog_weight"] as num?) ?? 0).toDouble();
         catWeight = ((data["cat_weight"] as num?) ?? 0).toDouble();
         _isInitialLoading = false;
       });
+
+      if (shouldRefresh) _loadSummary();
     });
 
     // Water sensors
@@ -90,10 +103,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final data = event.snapshot.value as Map?;
       if (data == null || !mounted) return;
 
+      final newTank = (data["tank_percentage"] as int?) ?? 0;
+      final newDishEmpty = (data["dish_empty"] ?? false) == true;
+      
+      // Check if crossed critical threshold or dish status changed
+      final wasCritical = tankPercentage <= AppConstants.criticalWaterThreshold;
+      final nowCritical = newTank <= AppConstants.criticalWaterThreshold;
+      final dishChanged = dishEmpty != newDishEmpty;
+      final shouldRefresh = !_isInitialLoading && ((wasCritical != nowCritical) || dishChanged);
+
       setState(() {
-        tankPercentage = (data["tank_percentage"] as int?) ?? 0;
-        dishEmpty = (data["dish_empty"] ?? false) == true;
+        tankPercentage = newTank;
+        dishEmpty = newDishEmpty;
       });
+
+      if (shouldRefresh) _loadSummary();
     });
 
     // Water status
@@ -109,9 +133,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Entertainment
     _subEntertainment = _firebase.entertainmentStream().listen((event) {
       if (!mounted) return;
+      final newValue = event.snapshot.value == true;
+      final changed = entertainmentOn != newValue;
       setState(() {
-        entertainmentOn = event.snapshot.value == true;
+        entertainmentOn = newValue;
       });
+      // Refresh AI summary when entertainment changes
+      if (changed && !_isInitialLoading) {
+        _loadSummary();
+      }
     });
   }
 
@@ -510,15 +540,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   IconData _getTipIcon(String tip) {
     if (tip.contains('🔴') || tip.contains('⚠')) return Icons.warning_rounded;
     if (tip.contains('🟠') || tip.contains('🟡')) return Icons.info_rounded;
-    if (tip.contains('✅') || tip.contains('🟢'))
+    if (tip.contains('✅') || tip.contains('🟢')) {
       return Icons.check_circle_rounded;
+    }
     return Icons.lightbulb_outline;
   }
 
   Color _getTipColor(String tip) {
     if (tip.contains('🔴') || tip.contains('⚠')) return AppTheme.severityHigh;
-    if (tip.contains('🟠') || tip.contains('🟡'))
+    if (tip.contains('🟠') || tip.contains('🟡')) {
       return AppTheme.severityMedium;
+    }
     if (tip.contains('✅') || tip.contains('🟢')) return AppTheme.severityLow;
     return Colors.grey;
   }

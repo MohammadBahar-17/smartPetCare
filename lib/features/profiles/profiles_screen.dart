@@ -67,7 +67,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
 
                   // Type Dropdown
                   DropdownButtonFormField<String>(
-                    value: selectedType,
+                    initialValue: selectedType,
                     decoration: const InputDecoration(
                       labelText: "Type",
                       prefixIcon: Icon(Icons.category),

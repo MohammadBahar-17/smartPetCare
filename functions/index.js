@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-// ===== Function to normalize Arabic text (removes hamzas and standardizes forms) =====
+// ===== Normalize Arabic text (removes hamzas) =====
 const normalizeArabic = (text) => {
   return text
     .replace(/[أإاآ]/g, "ا") // Alef in various forms
@@ -201,7 +201,9 @@ exports.askAi = onRequest(async (req, res) => {
 
         if (waterLow || tankPercent < 10) {
           severity = "high";
-          tips.push("⚠️ Water level is critically low. Please refill the tank immediately.");
+          tips.push(
+            "⚠️ Water level is critically low. Refill the tank!"
+          );
           actions.push("Fill water tank");
         } else if (tankPercent < 30) {
           severity = "medium";
@@ -211,7 +213,9 @@ exports.askAi = onRequest(async (req, res) => {
         }
 
         if (dishEmpty) {
-          tips.push("Water dish is empty. Check the pump or enable manual refill.");
+          tips.push(
+            "Water dish is empty. Check pump or enable manual refill."
+          );
         }
 
         if (isDraining) {
@@ -236,7 +240,9 @@ exports.askAi = onRequest(async (req, res) => {
         } else {
           answer = "Entertainment system is off 🎾";
           severity = "medium";
-          tips.push("Enable entertainment to stimulate animals and reduce boredom.");
+          tips.push(
+            "Enable entertainment to stimulate animals."
+          );
           actions.push("Enable entertainment system");
         }
       }
@@ -258,7 +264,9 @@ exports.askAi = onRequest(async (req, res) => {
         // Severity based on priorities
         if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
           severity = "high";
-        } else if (catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty) {
+        } else if (
+          catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty
+        ) {
           severity = "medium";
         } else if (!entertainmentOn) {
           severity = "medium";
@@ -269,7 +277,9 @@ exports.askAi = onRequest(async (req, res) => {
         // Comprehensive tips in Arabic
         if (catFood <= 20) tips.push(`🔴 أكل القط منخفض (${catFood}%)`);
         if (dogFood <= 20) tips.push(`🔴 أكل الكلب منخفض (${dogFood}%)`);
-        if (waterLow || tankPercent < 10) tips.push(`🔴 المياه حرجة (${tankPercent}%)`);
+        if (waterLow || tankPercent < 10) {
+          tips.push(`🔴 المياه حرجة (${tankPercent}%)`);
+        }
         if (dishEmpty) tips.push(`🟡 صحن الماء فارغ`);
         if (!entertainmentOn) tips.push(`🟡 نظام الترفيه مغلق`);
 
@@ -294,7 +304,9 @@ exports.askAi = onRequest(async (req, res) => {
         // Severity based on priorities
         if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
           severity = "high";
-        } else if (catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty) {
+        } else if (
+          catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty
+        ) {
           severity = "medium";
         } else if (!entertainmentOn) {
           severity = "medium";
@@ -305,7 +317,9 @@ exports.askAi = onRequest(async (req, res) => {
         // Comprehensive tips
         if (catFood <= 20) tips.push(`🔴 Cat food is low (${catFood}%)`);
         if (dogFood <= 20) tips.push(`🔴 Dog food is low (${dogFood}%)`);
-        if (waterLow || tankPercent < 10) tips.push(`🔴 Water is critical (${tankPercent}%)`);
+        if (waterLow || tankPercent < 10) {
+          tips.push(`🔴 Water is critical (${tankPercent}%)`);
+        }
         if (dishEmpty) tips.push(`🟡 Water dish is empty`);
         if (!entertainmentOn) tips.push(`🟡 Entertainment system is off`);
 
@@ -318,7 +332,10 @@ exports.askAi = onRequest(async (req, res) => {
     }
 
     if (tips.length === 0) {
-      tips.push(isArabic ? "جميع القراءات طبيعية ✅" : "All readings are normal ✅");
+      const msg = isArabic
+        ? "جميع القراءات طبيعية ✅"
+        : "All readings are normal ✅";
+      tips.push(msg);
     }
 
     return res.json({

@@ -159,7 +159,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
     final amountCtrl = TextEditingController(text: "35");
     Set<String> selectedDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-    String _getDaysDisplayText(Set<String> days) {
+    String getDaysDisplayText(Set<String> days) {
       if (days.length == 7) return "Every Day";
       if (days.isEmpty) return "Select Days";
       final weekdays = {"Mon", "Tue", "Wed", "Thu", "Fri"};
@@ -169,7 +169,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
       return days.join(", ");
     }
 
-    Future<void> _showDaysDialog(StateSetter setDialogState) async {
+    Future<void> showDaysDialog(StateSetter setDialogState) async {
       final allDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       final tempSelected = Set<String>.from(selectedDays);
 
@@ -249,7 +249,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
               children: [
                 // Animal Dropdown
                 DropdownButtonFormField<String>(
-                  value: selectedAnimal,
+                  initialValue: selectedAnimal,
                   decoration: const InputDecoration(
                     labelText: "Animal",
                     prefixIcon: Icon(Icons.pets),
@@ -309,7 +309,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
                 // Days Selection - Opens Dialog
                 InkWell(
-                  onTap: () => _showDaysDialog(setDialogState),
+                  onTap: () => showDaysDialog(setDialogState),
                   child: InputDecorator(
                     decoration: const InputDecoration(
                       labelText: "Days",
@@ -320,7 +320,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            _getDaysDisplayText(selectedDays),
+                            getDaysDisplayText(selectedDays),
                             style: Theme.of(context).textTheme.bodyLarge,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -551,11 +551,19 @@ class _FeedingScreenState extends State<FeedingScreen> {
                           : AppTheme.severityLow,
                 ),
           ),
-          Text(
-            "Bowl: ${bowlWeight.toStringAsFixed(1)}g",
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey,
-                ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.scale, size: 16, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                "Bowl: ${bowlWeight.toStringAsFixed(1)}g",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
           ),
         ],
       ),
