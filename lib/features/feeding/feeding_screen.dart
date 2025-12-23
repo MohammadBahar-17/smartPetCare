@@ -415,14 +415,14 @@ class _FeedingScreenState extends State<FeedingScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text("🍗 Feeding")),
+        appBar: AppBar(title: const Text("🥣 Feeding")),
         body: const LoadingIndicator(message: "Loading feeding data..."),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("🍗 Feeding"),
+        title: const Text("🥣 Feeding"),
         actions: [
           IconButton(
             icon: const Icon(Icons.pets),
@@ -475,27 +475,26 @@ class _FeedingScreenState extends State<FeedingScreen> {
           title: "Food Levels",
           icon: Icons.sensors,
         ),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.2,
+        Row(
           children: [
-            _buildFoodCard(
-              "Cat Food",
-              "🐱",
-              catFood,
-              catWeight,
-              AppConstants.lowFoodThreshold,
+            Expanded(
+              child: _buildFoodCard(
+                "Cat Food",
+                "🐱",
+                catFood,
+                catWeight,
+                AppConstants.lowFoodThreshold,
+              ),
             ),
-            _buildFoodCard(
-              "Dog Food",
-              "🐕",
-              dogFood,
-              dogWeight,
-              AppConstants.lowFoodThreshold,
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildFoodCard(
+                "Dog Food",
+                "🐕",
+                dogFood,
+                dogWeight,
+                AppConstants.lowFoodThreshold,
+              ),
             ),
           ],
         ),
@@ -521,28 +520,29 @@ class _FeedingScreenState extends State<FeedingScreen> {
               : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
-              const SizedBox(width: 8),
+              Text(emoji, style: const TextStyle(fontSize: 22)),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (isCritical)
-                const Icon(Icons.warning, color: AppTheme.severityHigh, size: 20)
+                const Icon(Icons.warning, color: AppTheme.severityHigh, size: 18)
               else if (isLow)
-                const Icon(Icons.info, color: AppTheme.severityMedium, size: 20),
+                const Icon(Icons.info, color: AppTheme.severityMedium, size: 18),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             "$level%",
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: isCritical
                       ? AppTheme.severityHigh
@@ -554,14 +554,17 @@ class _FeedingScreenState extends State<FeedingScreen> {
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(Icons.scale, size: 16, color: Colors.grey.shade600),
+              Icon(Icons.scale, size: 14, color: Colors.grey.shade600),
               const SizedBox(width: 4),
-              Text(
-                "Bowl: ${bowlWeight.toStringAsFixed(1)}g",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
+              Flexible(
+                child: Text(
+                  "Bowl: ${bowlWeight.toStringAsFixed(1)}g",
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),

@@ -206,14 +206,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     if (_isInitialLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text("🐾 SmartPetCare")),
+        appBar: AppBar(
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'assets/images/smartpetcare.jpeg',
+                  height: 32,
+                  width: 32,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text("SmartPetCare"),
+            ],
+          ),
+        ),
         body: const LoadingIndicator(message: "Loading dashboard..."),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("🐾 SmartPetCare"),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/images/smartpetcare.jpeg',
+                height: 32,
+                width: 32,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text("SmartPetCare"),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.smart_toy),
@@ -246,8 +278,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSystemSummaryCard(),
-              const SizedBox(height: AppTheme.spacingMd),
               _buildSensorOverview(),
               const SizedBox(height: AppTheme.spacingMd),
               _buildQuickActions(),
@@ -312,9 +342,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.4,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 1.5,
           children: [
             StatusIndicator(
               label: "Cat Food",
@@ -346,7 +376,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             StatusIndicator(
               label: "Entertainment",
               value: entertainmentOn ? "ON" : "OFF",
-              icon: Icons.toys,
+              icon: Icons.flashlight_on,
               color: entertainmentOn ? AppTheme.successColor : Colors.grey,
             ),
           ],
@@ -405,15 +435,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 label: "AI Meals",
                 isLoading: mealsAiLoading,
                 onPressed: _generateMealsAi,
-              ),
-              const SizedBox(width: 16),
-              QuickActionButton(
-                icon: isDraining ? Icons.water : Icons.water_drop_outlined,
-                label: isDraining ? "Draining" : "Drain",
-                color: isDraining
-                    ? AppTheme.warningColor.withValues(alpha: 0.3)
-                    : null,
-                onPressed: () => _firebase.setDrainControl(!isDraining),
               ),
               const SizedBox(width: 16),
               QuickActionButton(
