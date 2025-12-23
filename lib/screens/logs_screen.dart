@@ -23,7 +23,7 @@ class _LogsScreenState extends State<LogsScreen> {
   void initState() {
     super.initState();
 
-    // آخر 20 أمر
+    // Last 20 commands
     _subCommands = db.child("logs/commands").limitToLast(20).onValue.listen((
       event,
     ) {
@@ -47,7 +47,7 @@ class _LogsScreenState extends State<LogsScreen> {
       }
     });
 
-    // آخر 20 تنبيه
+    // Last 20 alerts
     _subAlerts = db.child("logs/alerts").limitToLast(20).onValue.listen((
       event,
     ) {

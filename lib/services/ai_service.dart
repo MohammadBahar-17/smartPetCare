@@ -5,6 +5,9 @@ class AiService {
   final String url =
       "https://us-central1-smartcatcare.cloudfunctions.net/askAi";
 
+  final String generateMealsUrl =
+      "https://us-central1-smartcatcare.cloudfunctions.net/generateMealsAi";
+
   Future<Map<String, dynamic>> ask(String question) async {
     final resp = await http.post(
       Uri.parse(url),
@@ -14,6 +17,22 @@ class AiService {
 
     if (resp.statusCode != 200) {
       throw Exception("AI error ${resp.statusCode}: ${resp.body}");
+    }
+
+    return jsonDecode(resp.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> generateMealsAi() async {
+    final resp = await http.post(
+      Uri.parse(generateMealsUrl),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception(
+        "AI generate meals error ${resp.statusCode}: ${resp.body}",
+      );
     }
 
     return jsonDecode(resp.body) as Map<String, dynamic>;

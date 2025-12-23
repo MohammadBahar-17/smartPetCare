@@ -92,6 +92,7 @@ class _FoodScreenState extends State<FoodScreen> {
   String aiSeverity = "low";
   List<String> aiActions = [];
   bool aiLoading = false;
+  bool mealsAiLoading = false;
 
   StreamSubscription<DatabaseEvent>? _subFoodSensors;
   bool showFoodAlert = false;
@@ -122,17 +123,17 @@ class _FoodScreenState extends State<FoodScreen> {
     final tips = <String>[];
 
     if (catFood < 20) {
-      tips.add("أكل القط منخفض: $catFood% (يفضل تعبئة قريبًا)");
+      tips.add("Cat food low: $catFood% (Please refill soon)");
     }
     if (dogFood < 20) {
-      tips.add("أكل الكلب منخفض: $dogFood% (يفضل تعبئة قريبًا)");
+      tips.add("Dog food low: $dogFood% (Please refill soon)");
     }
 
-    if (tips.isEmpty) tips.add("كل القراءات طبيعية ✅");
+    if (tips.isEmpty) tips.add("All readings normal ✅");
 
     setState(() {
       dashboardTips = tips;
-      dashboardOk = tips.length == 1 && tips.first.contains("طبيعية");
+      dashboardOk = tips.length == 1 && tips.first.contains("normal");
     });
   }
 
@@ -144,7 +145,7 @@ class _FoodScreenState extends State<FoodScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Dashboard — الحالة الآن",
+              "Dashboard — Current Status",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -152,7 +153,7 @@ class _FoodScreenState extends State<FoodScreen> {
             Text("Dog Food: $dogFood%"),
             const Divider(),
             const Text(
-              "توصيات تلقائية:",
+              "Auto-generated Tips:",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
@@ -194,7 +195,7 @@ class _FoodScreenState extends State<FoodScreen> {
             TextField(
               controller: _qController,
               decoration: const InputDecoration(
-                labelText: "اكتب سؤالك",
+                labelText: "Ask your question",
                 border: OutlineInputBorder(),
               ),
             ),
@@ -225,7 +226,7 @@ class _FoodScreenState extends State<FoodScreen> {
                             setState(() => aiLoading = false);
                           }
                         },
-                  child: Text(aiLoading ? "..." : "اسأل"),
+                  child: Text(aiLoading ? "..." : "Ask"),
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
@@ -251,7 +252,7 @@ class _FoodScreenState extends State<FoodScreen> {
                             setState(() => aiLoading = false);
                           }
                         },
-                  child: const Text("ملخص الحالة"),
+                  child: const Text("Status Summary"),
                 ),
               ],
             ),
@@ -275,7 +276,7 @@ class _FoodScreenState extends State<FoodScreen> {
             if (aiActions.isNotEmpty) ...[
               const SizedBox(height: 8),
               const Text(
-                "اقتراحات:",
+                "Recommendations:",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               ...aiActions.map((a) => Text("• $a")),
@@ -319,8 +320,8 @@ class _FoodScreenState extends State<FoodScreen> {
       String alertText = "";
       if (shouldAlert) {
         final parts = <String>[];
-        if (cat < 20) parts.add("أكل القط منخفض: $cat%");
-        if (dog < 20) parts.add("أكل الكلب منخفض: $dog%");
+        if (cat < 20) parts.add("Cat food low: $cat%");
+        if (dog < 20) parts.add("Dog food low: $dog%");
         alertText = parts.join(" | ");
       }
 
@@ -383,13 +384,68 @@ class _FoodScreenState extends State<FoodScreen> {
   }
 
   Future<void> addMeal() async {
+    final animalCtrl = TextEditingController(text: "cat");
+    final hourCtrl = TextEditingController(text: "15");
+    final minCtrl = TextEditingController(text: "20");
+    final amountCtrl = TextEditingController(text: "35");
+    final daysCtrl = TextEditingController(text: "all");
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Add New Meal"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: animalCtrl,
+                decoration: const InputDecoration(labelText: "Animal (cat/dog)"),
+              ),
+              TextField(
+                controller: hourCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Hour"),
+              ),
+              TextField(
+                controller: minCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Minutes"),
+              ),
+              TextField(
+                controller: amountCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Amount (grams)"),
+              ),
+              TextField(
+                controller: daysCtrl,
+                decoration: const InputDecoration(labelText: "Days (all/weekdays/...)"),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text("Add"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
     final id = db.child("feeding/meals").push().key;
     await db.child("feeding/meals/$id").set({
-      "animal": "cat",
-      "hour": 15,
-      "minute": 20,
-      "amount": 35,
-      "days": "all",
+      "animal": animalCtrl.text.trim(),
+      "hour": int.tryParse(hourCtrl.text) ?? 15,
+      "minute": int.tryParse(minCtrl.text) ?? 20,
+      "amount": int.tryParse(amountCtrl.text) ?? 35,
+      "days": daysCtrl.text.trim(),
     });
     loadMeals();
   }
@@ -397,6 +453,26 @@ class _FoodScreenState extends State<FoodScreen> {
   Future<void> deleteMeal(String id) async {
     await db.child("feeding/meals/$id").remove();
     loadMeals();
+  }
+
+  Future<void> generateMealsAi() async {
+    if (mealsAiLoading) return;
+    setState(() => mealsAiLoading = true);
+    try {
+      await _ai.generateMealsAi();
+      await loadMeals();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Meals generated successfully ✅")),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    } finally {
+      if (mounted) setState(() => mealsAiLoading = false);
+    }
   }
 
   Future<void> loadPets() async {
@@ -413,14 +489,73 @@ class _FoodScreenState extends State<FoodScreen> {
   }
 
   Future<void> addPet() async {
+    final nameCtrl = TextEditingController();
+    final typeCtrl = TextEditingController(text: "cat");
+    final ageCtrl = TextEditingController(text: "1");
+    final breedCtrl = TextEditingController();
+    final weightCtrl = TextEditingController(text: "4.0");
+    final notesCtrl = TextEditingController();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Add New Pet"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: "Name"),
+              ),
+              TextField(
+                controller: typeCtrl,
+                decoration: const InputDecoration(labelText: "Type (cat/dog)"),
+              ),
+              TextField(
+                controller: ageCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Age"),
+              ),
+              TextField(
+                controller: breedCtrl,
+                decoration: const InputDecoration(labelText: "Breed"),
+              ),
+              TextField(
+                controller: weightCtrl,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: "Weight (kg)"),
+              ),
+              TextField(
+                controller: notesCtrl,
+                decoration: const InputDecoration(labelText: "Notes"),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text("Add"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
     final id = db.child("profiles").push().key;
     await db.child("profiles/$id").set({
-      "name": "Snow",
-      "type": "cat",
-      "age": 2,
-      "breed": "Persian",
-      "weight": 4.2,
-      "notes": "Loves tuna",
+      "name": nameCtrl.text.trim(),
+      "type": typeCtrl.text.trim(),
+      "age": int.tryParse(ageCtrl.text) ?? 1,
+      "breed": breedCtrl.text.trim(),
+      "weight": double.tryParse(weightCtrl.text) ?? 4.0,
+      "notes": notesCtrl.text.trim(),
     });
     loadPets();
   }
@@ -503,7 +638,7 @@ class _FoodScreenState extends State<FoodScreen> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.warning_amber_rounded),
-                    title: const Text("تنبيه تلقائي"),
+                    title: const Text("Automatic Alert"),
                     subtitle: Text(foodAlertText),
                   ),
                 ),
@@ -511,10 +646,10 @@ class _FoodScreenState extends State<FoodScreen> {
                 "=== FOOD SENSORS ===",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Text("Dog Food Level: $dogFood%"),
-              Text("Cat Food Level: $catFood%"),
-              Text("Dog Weight: $dogWeight g"),
-              Text("Cat Weight: $catWeight g"),
+              Text("Dog Food Level in the tank: $dogFood%"),
+              Text("Cat Food Level in the tank: $catFood%"),
+              Text("Dog Bowl Weight: $dogWeight g"),
+              Text("Cat Bowl Weight: $catWeight g"),
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -556,7 +691,7 @@ class _FoodScreenState extends State<FoodScreen> {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: addPet,
-                child: const Text("Add Test Pet"),
+                child: const Text("Add Pet"),
               ),
               const SizedBox(height: 40),
 
@@ -587,7 +722,16 @@ class _FoodScreenState extends State<FoodScreen> {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: addMeal,
-                child: const Text("Add Test Meal"),
+                child: const Text("Add Meal"),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: mealsAiLoading ? null : generateMealsAi,
+                child: Text(
+                  mealsAiLoading
+                      ? "Generating meals..."
+                      : "Generate Meals with AI",
+                ),
               ),
               aiPanel(),
               entertainmentButton(),

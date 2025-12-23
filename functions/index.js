@@ -3,120 +3,209 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+// ===== Function to normalize Arabic text (removes hamzas and standardizes forms) =====
+const normalizeArabic = (text) => {
+  return text
+    .replace(/[أإاآ]/g, "ا") // Alef in various forms
+    .replace(/ة/g, "ه") // Taa Marbuta
+    .replace(/ي/g, "ي"); // Yaa in various forms
+};
+
 exports.askAi = onRequest(async (req, res) => {
   try {
-    // ✅ السؤال اختياري (لو فاضي = ملخص)
     const q = ((req.body || {}).question || "").toString().trim().toLowerCase();
-
+    const qNorm = normalizeArabic(q); // normalize without hamzas
     const db = admin.database();
 
-    const [feedingSnap, waterSnap] = await Promise.all([
-      db.ref("feeding/sensors").get(),
-      db.ref("water/sensors").get(),
-    ]);
+    // ===== Fetch Data =====
+    const [
+      feedingSnap,
+      waterSnap,
+      waterStatusSnap,
+      waterAlertsSnap,
+      entertainmentSnap,
+    ] = await Promise.all([
+        db.ref("feeding/sensors").get(),
+        db.ref("water/sensors").get(),
+        db.ref("water/status").get(),
+        db.ref("water/alerts").get(),
+        db.ref("entertainment/commands").get(),
+      ]);
 
     const feeding = feedingSnap.val() || {};
-    const water = waterSnap.val() || {}; // ✅ كانت ناقصة عندك
+    const water = waterSnap.val() || {};
+    const waterStatus = waterStatusSnap.val() || {};
+    const waterAlerts = waterAlertsSnap.val() || {};
+    const entertainment = entertainmentSnap.val() || {};
 
+    // ===== Extract Values =====
     const catFood = feeding.cat_food_level ?? 0;
     const dogFood = feeding.dog_food_level ?? 0;
     const catWeight = feeding.cat_weight ?? 0;
     const dogWeight = feeding.dog_weight ?? 0;
+    const tankPercent = water.tank_percentage ?? 0;
+    const dishEmpty = water.dish_empty ?? false;
+    const isDraining = waterStatus.is_draining ?? false;
+    const waterLow = waterAlerts.water_low ?? false;
+    const entertainmentOn = entertainment.system_on ?? false;
 
-    const tankPercent = water.tank_percentage ?? null;
-    const dishEmpty = water.dish_empty ?? null;
-    const tankFull = water.tank_full ?? null;
-
-    // ===== ملخص افتراضي (لو ما في سؤال) =====
-    const reportLines = [
-      "ملخص الحالة:",
-      `- أكل القط: ${catFood}%`,
-      `- أكل الكلب: ${dogFood}%`,
-      `- وزن الأكل في صحن القط: ${catWeight} g`,
-      `- وزن الأكل في صحن الكلب: ${dogWeight} g`,
-    ];
-    if (tankPercent != null) reportLines.push(`- التنك: ${tankPercent}%`);
-    if (dishEmpty != null) {
-      reportLines.push(`- الصحن فاضي: ${dishEmpty ? "نعم" : "لا"}`);
-    }
-    if (tankFull != null) {
-      reportLines.push(`- التنك ممتلئ: ${tankFull ? "نعم" : "لا"}`);
-    }
-    const report = reportLines.join("\n");
-
-    // ===== جواب حسب السؤال =====
-    let answer = report; // ✅ default: ملخص
-
-    if (q.includes("قط") && (q.includes("أكل") || q.includes("food"))) {
-      answer = `نسبة الأكل المتبقي للقطة هي ${catFood}%.`;
-    } else if (q.includes("كلب") && (q.includes("أكل") || q.includes("food"))) {
-      answer = `نسبة الأكل المتبقي للكلب هي ${dogFood}%.`;
+    // ===== Detect Intent =====
+    let intent = "summary";
+    if (qNorm.includes("قط") && qNorm.includes("اكل")) {
+      intent = "cat_food";
+    } else if (qNorm.includes("كلب") && qNorm.includes("اكل")) {
+      intent = "dog_food";
     } else if (
-      q.includes("قط") &&
-      (q.includes("وزن") || q.includes("weight"))
+      (qNorm.includes("قط") || qNorm.includes("كلب")) &&
+      (qNorm.includes("وزن") || q.includes("weight"))
     ) {
-      answer = `وزن الأكل الحالي في صحن القط هو ${catWeight} غرام.`;
+      intent = "weight";
     } else if (
-      q.includes("كلب") &&
-      (q.includes("وزن") || q.includes("weight"))
+      qNorm.includes("مي") ||
+      qNorm.includes("ماء") ||
+      q.includes("water")
     ) {
-      answer = `وزن الأكل الحالي في صحن الكلب هو ${dogWeight} غرام.`;
-    } else if (q.includes("مي") || q.includes("ماء") || q.includes("water")) {
-      answer =
-        `حالة نظام المي:\n` +
-        (tankPercent != null ? `- نسبة التنك: ${tankPercent}%\n` : "") +
-        (tankFull != null
-          ? `- التنك ممتلئ: ${tankFull ? "نعم" : "لا"}\n`
-          : "") +
-        (dishEmpty != null ? `- الصحن فاضي: ${dishEmpty ? "نعم" : "لا"}` : "");
+      intent = "water";
     } else if (
-      q.includes("ملخص") ||
-      q.includes("حالة") ||
+      qNorm.includes("ترفيه") ||
+      q.includes("entertainment") ||
+      qNorm.includes("لعب")
+    ) {
+      intent = "entertainment";
+    } else if (
+      qNorm.includes("ملخص") ||
+      qNorm.includes("حالة") ||
       q.includes("status") ||
       q === ""
     ) {
-      answer = report;
-    }
-
-    // ===== Intent detection =====
-    let intent = "summary"; // default
-    if (q.includes("قط") && q.includes("أكل")) intent = "cat_food";
-    else if (q.includes("كلب") && q.includes("أكل")) intent = "dog_food";
-    else if (q.includes("مي") || q.includes("ماء") || q.includes("water")) {
-      intent = "water";
-    } else if (q.includes("وزن")) intent = "weight";
-    else if (q.includes("ملخص") || q.includes("حالة") || q.includes("status")) {
       intent = "summary";
     }
 
-    // ===== Severity =====
-    let severity = "low";
-    if (catFood <= 10 || dogFood <= 10) severity = "high";
-    else if (catFood <= 20 || dogFood <= 20) severity = "medium";
-
-    // ===== Suggested actions (اقتراحات فقط) =====
-    const actions = [];
-    if (catFood <= 20) actions.push("إطعام القط (يدوي)");
-    if (dogFood <= 20) actions.push("إطعام الكلب (يدوي)");
-    if (tankPercent != null && tankPercent <= 10)
-      actions.push("تعبئة خزان الماء");
-
-    // ===== توصيات عامة =====
+    // ===== بناء الإجابة حسب Intent =====
+    let answer = "";
     const tips = [];
+    let severity = "low";
+    const actions = [];
 
-    if (catFood <= 20)
-      tips.push("أكل القط منخفض (≤20%). يفضّل تعبئة الطعام قريبًا.");
-    if (dogFood <= 20)
-      tips.push("أكل الكلب منخفض (≤20%). يفضّل تعبئة الطعام قريبًا.");
+    if (intent === "cat_food") {
+      answer = `Cat food remaining: ${catFood}%.`;
+      if (catFood <= 10) {
+        severity = "high";
+        tips.push("⚠️ Cat food is critical!");
+        actions.push("Feed cat immediately");
+      } else if (catFood <= 20) {
+        severity = "medium";
+        tips.push("Cat food is low. Please refill soon.");
+        actions.push("Feed cat (manual)");
+      } else {
+        tips.push("Cat food is normal ✅");
+      }
+    } else if (intent === "dog_food") {
+      answer = `Dog food remaining: ${dogFood}%.`;
+      if (dogFood <= 10) {
+        severity = "high";
+        tips.push("⚠️ Dog food is critical!");
+        actions.push("Feed dog immediately");
+      } else if (dogFood <= 20) {
+        severity = "medium";
+        tips.push("Dog food is low. Please refill soon.");
+        actions.push("Feed dog (manual)");
+      } else {
+        tips.push("Dog food is normal ✅");
+      }
+    } else if (intent === "weight") {
+      if (q.includes("قط")) {
+        answer = `Food weight in cat bowl: ${catWeight} grams.`;
+      } else if (q.includes("كلب")) {
+        answer = `Food weight in dog bowl: ${dogWeight} grams.`;
+      } else {
+        answer = `Cat: ${catWeight}g | Dog: ${dogWeight}g`;
+      }
+      tips.push("Weights updated from scale sensors.");
+    } else if (intent === "water") {
+      const waterLines = [
+        `نسبة المياه بالتنك: ${tankPercent}%`,
+        `صحن المياه فارغ: ${dishEmpty ? "نعم ⚠️" : "لا ✅"}`,
+      ];
+      answer = waterLines.join("\n");
 
-    if (tankPercent != null && tankPercent <= 10) {
-      tips.push("التنك أقل من 10%. لازم تعبيه اليوم.");
+      if (waterLow || tankPercent < 10) {
+        severity = "high";
+        tips.push("⚠️ مستوى المياه منخفض جدًا. يفضّل تعبئة التنك فورًا.");
+        actions.push("تعبئة خزان الماء");
+      } else if (tankPercent < 30) {
+        severity = "medium";
+        tips.push("نسبة المياه آخذة بالانخفاض. يفضّل التجهز للتعبئة.");
+      } else {
+        tips.push("نسبة المياه ضمن الطبيعي ✅");
+      }
+
+      if (dishEmpty) {
+        tips.push("صحن الماء فارغ. تحقق من المضخة أو فعّل التعبئة اليدوية.");
+      }
+
+      if (isDraining) {
+        tips.push("نظام التصريف يعمل حاليًا.");
+      }
+    } else if (intent === "entertainment") {
+      if (entertainmentOn) {
+        answer = "Entertainment system is active 🟢";
+        tips.push("Animals are enjoying entertainment activities.");
+      } else {
+        answer = "Entertainment system is off 🎾";
+        severity = "medium";
+        tips.push("Enable entertainment to stimulate animals and reduce boredom.");
+        actions.push("Enable entertainment system");
+      }
+    } else if (intent === "summary") {
+      // Comprehensive summary of everything
+      const reportLines = [
+        "Status Summary:",
+        `- Cat food: ${catFood}%`,
+        `- Dog food: ${dogFood}%`,
+        `- Food weight (Cat): ${catWeight} g`,
+        `- Food weight (Dog): ${dogWeight} g`,
+        `- Water tank level: ${tankPercent}%`,
+        `- Water dish empty: ${dishEmpty ? "Yes" : "No"}`,
+        `- Entertainment system: ${entertainmentOn ? "Active 🟢" : "Off 🎾"}`,
+      ];
+      answer = reportLines.join("\n");
+
+      // Severity based on priorities
+      if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
+        severity = "high";
+      } else if (
+        catFood <= 20 ||
+        dogFood <= 20 ||
+        tankPercent < 30 ||
+        dishEmpty
+      ) {
+        severity = "medium";
+      } else if (!entertainmentOn) {
+        severity = "medium";
+      } else {
+        severity = "low";
+      }
+
+      // Comprehensive tips
+      if (catFood <= 20) tips.push(`🔴 Cat food is low (${catFood}%)`);
+      if (dogFood <= 20) tips.push(`🔴 Dog food is low (${dogFood}%)`);
+      if (waterLow || tankPercent < 10) {
+        tips.push(`🔴 Water is critical (${tankPercent}%)`);
+      }
+      if (dishEmpty) tips.push(`🟡 Water dish is empty`);
+      if (!entertainmentOn) tips.push(`🟡 Entertainment system is off`);
+
+      // Comprehensive actions
+      if (catFood <= 20) actions.push("Feed cat");
+      if (dogFood <= 20) actions.push("Feed dog");
+      if (waterLow || tankPercent < 10) actions.push("Fill water tank");
+      if (!entertainmentOn) actions.push("Enable entertainment system");
     }
-    if (dishEmpty === true) {
-      tips.push("الصحن فاضي. افحص المضخة/التعبئة أو حسّاس الصحن.");
-    }
 
-    if (tips.length === 0) tips.push("كل القراءات ضمن الطبيعي ✅");
+    if (tips.length === 0) {
+      tips.push("All readings are normal ✅");
+    }
 
     return res.json({
       answer,
@@ -129,9 +218,131 @@ exports.askAi = onRequest(async (req, res) => {
         dog_food_level: dogFood,
         tank_percentage: tankPercent,
         dish_empty: dishEmpty,
+        water_low: waterLow,
+        entertainment_on: entertainmentOn,
       },
     });
   } catch (e) {
     return res.status(500).json({ error: e.toString() });
+  }
+});
+
+// ✅ Button: Generate meals automatically
+exports.generateMealsAi = onRequest(async (req, res) => {
+  try {
+    const db = admin.database();
+
+    // Read profiles + meta kcal
+    const [profilesSnap, metaSnap] = await Promise.all([
+      db.ref("profiles").get(),
+      db.ref("feeding/meta").get(),
+    ]);
+
+    const profiles = profilesSnap.val() || {};
+    const meta = metaSnap.val() || {};
+
+    const catKcalPerGram = Number(meta.cat_kcal_per_gram ?? 3.6);
+    const dogKcalPerGram = Number(meta.dog_kcal_per_gram ?? 3.6);
+
+    // RER
+    const rerForKg = (wKg) => 70 * Math.pow(wKg, 0.75);
+
+    // Multipliers (normal adult)
+    const CAT_MULT = 1.2;
+    const DOG_MULT = 1.6;
+
+    // Aggregate calories for both species
+    let catTotalCalories = 0;
+    let dogTotalCalories = 0;
+
+    for (const p of Object.values(profiles)) {
+      const type = (p.type || "").toString().toLowerCase();
+      const wKg = Number(p.weight ?? 0);
+      if (!wKg || (type !== "cat" && type !== "dog")) continue;
+
+      const rer = rerForKg(wKg);
+      const mer = rer * (type === "cat" ? CAT_MULT : DOG_MULT);
+
+      if (type === "cat") catTotalCalories += mer;
+      else dogTotalCalories += mer;
+    }
+
+    const catGramsPerDay = Math.max(
+      0,
+      Math.round(catTotalCalories / catKcalPerGram)
+    );
+    const dogGramsPerDay = Math.max(
+      0,
+      Math.round(dogTotalCalories / dogKcalPerGram)
+    );
+
+    // Simple fixed schedule (you can change it)
+    const catMealsPerDay = 2;
+    const dogMealsPerDay = 2;
+
+    const catTimes = [
+      { hour: 8, minute: 0 },
+      { hour: 18, minute: 0 },
+    ];
+    const dogTimes = [
+      { hour: 8, minute: 0 },
+      { hour: 20, minute: 0 },
+    ];
+
+    const catAmount = Math.max(1, Math.round(catGramsPerDay / catMealsPerDay));
+    const dogAmount = Math.max(1, Math.round(dogGramsPerDay / dogMealsPerDay));
+
+    // (Optional) Clear old meals before adding
+    // If you want "add on top of existing" delete these 2 lines
+    await db.ref("feeding/meals").remove();
+
+    // Write new meals (push keys)
+    const mealsRef = db.ref("feeding/meals");
+
+    const created = [];
+
+    for (const t of catTimes) {
+      const key = mealsRef.push().key;
+      const meal = {
+        animal: "cat",
+        hour: t.hour,
+        minute: t.minute,
+        amount: catAmount,
+        days: "all",
+      };
+      await mealsRef.child(key).set(meal);
+      created.push({ id: key, ...meal });
+    }
+
+    for (const t of dogTimes) {
+      const key = mealsRef.push().key;
+      const meal = {
+        animal: "dog",
+        hour: t.hour,
+        minute: t.minute,
+        amount: dogAmount,
+        days: "all",
+      };
+      await mealsRef.child(key).set(meal);
+      created.push({ id: key, ...meal });
+    }
+
+    return res.json({
+      ok: true,
+      cat: {
+        grams_per_day: catGramsPerDay,
+        grams_per_meal: catAmount,
+        meals: catTimes,
+      },
+      dog: {
+        grams_per_day: dogGramsPerDay,
+        grams_per_meal: dogAmount,
+        meals: dogTimes,
+      },
+      created_count: created.length,
+      created,
+    });
+  } catch (e) {
+    return res.status(500).json({ok: false, error: e.toString()});
   }
 });
