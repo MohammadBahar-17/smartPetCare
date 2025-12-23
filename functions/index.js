@@ -17,6 +17,9 @@ exports.askAi = onRequest(async (req, res) => {
     const qNorm = normalizeArabic(q); // normalize without hamzas
     const db = admin.database();
 
+    // ===== Detect Language =====
+    const isArabic = /[\u0600-\u06FF]/.test(q);
+
     // ===== Fetch Data =====
     const [
       feedingSnap,
@@ -88,123 +91,234 @@ exports.askAi = onRequest(async (req, res) => {
     const actions = [];
 
     if (intent === "cat_food") {
-      answer = `Cat food remaining: ${catFood}%.`;
-      if (catFood <= 10) {
-        severity = "high";
-        tips.push("⚠️ Cat food is critical!");
-        actions.push("Feed cat immediately");
-      } else if (catFood <= 20) {
-        severity = "medium";
-        tips.push("Cat food is low. Please refill soon.");
-        actions.push("Feed cat (manual)");
+      if (isArabic) {
+        answer = `أكل القط المتبقي: ${catFood}%`;
+        if (catFood <= 10) {
+          severity = "high";
+          tips.push("⚠️ أكل القط حرج!");
+          actions.push("أطعم القط فوراً");
+        } else if (catFood <= 20) {
+          severity = "medium";
+          tips.push("أكل القط منخفض. يرجى إعادة التعبئة قريباً.");
+          actions.push("أطعم القط (يدوي)");
+        } else {
+          tips.push("أكل القط طبيعي ✅");
+        }
       } else {
-        tips.push("Cat food is normal ✅");
+        answer = `Cat food remaining: ${catFood}%.`;
+        if (catFood <= 10) {
+          severity = "high";
+          tips.push("⚠️ Cat food is critical!");
+          actions.push("Feed cat immediately");
+        } else if (catFood <= 20) {
+          severity = "medium";
+          tips.push("Cat food is low. Please refill soon.");
+          actions.push("Feed cat (manual)");
+        } else {
+          tips.push("Cat food is normal ✅");
+        }
       }
     } else if (intent === "dog_food") {
-      answer = `Dog food remaining: ${dogFood}%.`;
-      if (dogFood <= 10) {
-        severity = "high";
-        tips.push("⚠️ Dog food is critical!");
-        actions.push("Feed dog immediately");
-      } else if (dogFood <= 20) {
-        severity = "medium";
-        tips.push("Dog food is low. Please refill soon.");
-        actions.push("Feed dog (manual)");
+      if (isArabic) {
+        answer = `أكل الكلب المتبقي: ${dogFood}%`;
+        if (dogFood <= 10) {
+          severity = "high";
+          tips.push("⚠️ أكل الكلب حرج!");
+          actions.push("أطعم الكلب فوراً");
+        } else if (dogFood <= 20) {
+          severity = "medium";
+          tips.push("أكل الكلب منخفض. يرجى إعادة التعبئة قريباً.");
+          actions.push("أطعم الكلب (يدوي)");
+        } else {
+          tips.push("أكل الكلب طبيعي ✅");
+        }
       } else {
-        tips.push("Dog food is normal ✅");
+        answer = `Dog food remaining: ${dogFood}%.`;
+        if (dogFood <= 10) {
+          severity = "high";
+          tips.push("⚠️ Dog food is critical!");
+          actions.push("Feed dog immediately");
+        } else if (dogFood <= 20) {
+          severity = "medium";
+          tips.push("Dog food is low. Please refill soon.");
+          actions.push("Feed dog (manual)");
+        } else {
+          tips.push("Dog food is normal ✅");
+        }
       }
     } else if (intent === "weight") {
-      if (q.includes("قط")) {
-        answer = `Food weight in cat bowl: ${catWeight} grams.`;
-      } else if (q.includes("كلب")) {
-        answer = `Food weight in dog bowl: ${dogWeight} grams.`;
+      if (isArabic) {
+        if (q.includes("قط")) {
+          answer = `وزن الأكل في صحن القط: ${catWeight} جرام.`;
+        } else if (q.includes("كلب")) {
+          answer = `وزن الأكل في صحن الكلب: ${dogWeight} جرام.`;
+        } else {
+          answer = `القط: ${catWeight}جم | الكلب: ${dogWeight}جم`;
+        }
+        tips.push("تم تحديث الأوزان من حساسات الميزان.");
       } else {
-        answer = `Cat: ${catWeight}g | Dog: ${dogWeight}g`;
+        if (q.includes("قط") || q.includes("cat")) {
+          answer = `Food weight in cat bowl: ${catWeight} grams.`;
+        } else if (q.includes("كلب") || q.includes("dog")) {
+          answer = `Food weight in dog bowl: ${dogWeight} grams.`;
+        } else {
+          answer = `Cat: ${catWeight}g | Dog: ${dogWeight}g`;
+        }
+        tips.push("Weights updated from scale sensors.");
       }
-      tips.push("Weights updated from scale sensors.");
     } else if (intent === "water") {
-      const waterLines = [
-        `نسبة المياه بالتنك: ${tankPercent}%`,
-        `صحن المياه فارغ: ${dishEmpty ? "نعم ⚠️" : "لا ✅"}`,
-      ];
-      answer = waterLines.join("\n");
+      if (isArabic) {
+        const waterLines = [
+          `نسبة المياه بالتنك: ${tankPercent}%`,
+          `صحن المياه فارغ: ${dishEmpty ? "نعم ⚠️" : "لا ✅"}`,
+        ];
+        answer = waterLines.join("\n");
 
-      if (waterLow || tankPercent < 10) {
-        severity = "high";
-        tips.push("⚠️ مستوى المياه منخفض جدًا. يفضّل تعبئة التنك فورًا.");
-        actions.push("تعبئة خزان الماء");
-      } else if (tankPercent < 30) {
-        severity = "medium";
-        tips.push("نسبة المياه آخذة بالانخفاض. يفضّل التجهز للتعبئة.");
+        if (waterLow || tankPercent < 10) {
+          severity = "high";
+          tips.push("⚠️ مستوى المياه منخفض جدًا. يفضّل تعبئة التنك فورًا.");
+          actions.push("تعبئة خزان الماء");
+        } else if (tankPercent < 30) {
+          severity = "medium";
+          tips.push("نسبة المياه آخذة بالانخفاض. يفضّل التجهز للتعبئة.");
+        } else {
+          tips.push("نسبة المياه ضمن الطبيعي ✅");
+        }
+
+        if (dishEmpty) {
+          tips.push("صحن الماء فارغ. تحقق من المضخة أو فعّل التعبئة اليدوية.");
+        }
+
+        if (isDraining) {
+          tips.push("نظام التصريف يعمل حاليًا.");
+        }
       } else {
-        tips.push("نسبة المياه ضمن الطبيعي ✅");
-      }
+        const waterLines = [
+          `Water tank level: ${tankPercent}%`,
+          `Water dish empty: ${dishEmpty ? "Yes ⚠️" : "No ✅"}`,
+        ];
+        answer = waterLines.join("\n");
 
-      if (dishEmpty) {
-        tips.push("صحن الماء فارغ. تحقق من المضخة أو فعّل التعبئة اليدوية.");
-      }
+        if (waterLow || tankPercent < 10) {
+          severity = "high";
+          tips.push("⚠️ Water level is critically low. Please refill the tank immediately.");
+          actions.push("Fill water tank");
+        } else if (tankPercent < 30) {
+          severity = "medium";
+          tips.push("Water level is getting low. Consider refilling soon.");
+        } else {
+          tips.push("Water level is normal ✅");
+        }
 
-      if (isDraining) {
-        tips.push("نظام التصريف يعمل حاليًا.");
+        if (dishEmpty) {
+          tips.push("Water dish is empty. Check the pump or enable manual refill.");
+        }
+
+        if (isDraining) {
+          tips.push("Draining system is currently active.");
+        }
       }
     } else if (intent === "entertainment") {
-      if (entertainmentOn) {
-        answer = "Entertainment system is active 🟢";
-        tips.push("Animals are enjoying entertainment activities.");
+      if (isArabic) {
+        if (entertainmentOn) {
+          answer = "نظام الترفيه نشط 🟢";
+          tips.push("الحيوانات تستمتع بأنشطة الترفيه.");
+        } else {
+          answer = "نظام الترفيه مغلق 🎾";
+          severity = "medium";
+          tips.push("فعّل نظام الترفيه لتحفيز الحيوانات وتقليل الملل.");
+          actions.push("تفعيل نظام الترفيه");
+        }
       } else {
-        answer = "Entertainment system is off 🎾";
-        severity = "medium";
-        tips.push("Enable entertainment to stimulate animals and reduce boredom.");
-        actions.push("Enable entertainment system");
+        if (entertainmentOn) {
+          answer = "Entertainment system is active 🟢";
+          tips.push("Animals are enjoying entertainment activities.");
+        } else {
+          answer = "Entertainment system is off 🎾";
+          severity = "medium";
+          tips.push("Enable entertainment to stimulate animals and reduce boredom.");
+          actions.push("Enable entertainment system");
+        }
       }
     } else if (intent === "summary") {
       // Comprehensive summary of everything
-      const reportLines = [
-        "Status Summary:",
-        `- Cat food: ${catFood}%`,
-        `- Dog food: ${dogFood}%`,
-        `- Food weight (Cat): ${catWeight} g`,
-        `- Food weight (Dog): ${dogWeight} g`,
-        `- Water tank level: ${tankPercent}%`,
-        `- Water dish empty: ${dishEmpty ? "Yes" : "No"}`,
-        `- Entertainment system: ${entertainmentOn ? "Active 🟢" : "Off 🎾"}`,
-      ];
-      answer = reportLines.join("\n");
+      if (isArabic) {
+        const reportLines = [
+          "ملخص الحالة:",
+          `- أكل القط: ${catFood}%`,
+          `- أكل الكلب: ${dogFood}%`,
+          `- وزن الأكل (قط): ${catWeight} جم`,
+          `- وزن الأكل (كلب): ${dogWeight} جم`,
+          `- مستوى خزان الماء: ${tankPercent}%`,
+          `- صحن الماء فارغ: ${dishEmpty ? "نعم" : "لا"}`,
+          `- نظام الترفيه: ${entertainmentOn ? "نشط 🟢" : "مغلق 🎾"}`,
+        ];
+        answer = reportLines.join("\n");
 
-      // Severity based on priorities
-      if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
-        severity = "high";
-      } else if (
-        catFood <= 20 ||
-        dogFood <= 20 ||
-        tankPercent < 30 ||
-        dishEmpty
-      ) {
-        severity = "medium";
-      } else if (!entertainmentOn) {
-        severity = "medium";
+        // Severity based on priorities
+        if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
+          severity = "high";
+        } else if (catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty) {
+          severity = "medium";
+        } else if (!entertainmentOn) {
+          severity = "medium";
+        } else {
+          severity = "low";
+        }
+
+        // Comprehensive tips in Arabic
+        if (catFood <= 20) tips.push(`🔴 أكل القط منخفض (${catFood}%)`);
+        if (dogFood <= 20) tips.push(`🔴 أكل الكلب منخفض (${dogFood}%)`);
+        if (waterLow || tankPercent < 10) tips.push(`🔴 المياه حرجة (${tankPercent}%)`);
+        if (dishEmpty) tips.push(`🟡 صحن الماء فارغ`);
+        if (!entertainmentOn) tips.push(`🟡 نظام الترفيه مغلق`);
+
+        // Comprehensive actions in Arabic
+        if (catFood <= 20) actions.push("أطعم القط");
+        if (dogFood <= 20) actions.push("أطعم الكلب");
+        if (waterLow || tankPercent < 10) actions.push("املأ خزان الماء");
+        if (!entertainmentOn) actions.push("فعّل نظام الترفيه");
       } else {
-        severity = "low";
-      }
+        const reportLines = [
+          "Status Summary:",
+          `- Cat food: ${catFood}%`,
+          `- Dog food: ${dogFood}%`,
+          `- Food weight (Cat): ${catWeight} g`,
+          `- Food weight (Dog): ${dogWeight} g`,
+          `- Water tank level: ${tankPercent}%`,
+          `- Water dish empty: ${dishEmpty ? "Yes" : "No"}`,
+          `- Entertainment system: ${entertainmentOn ? "Active 🟢" : "Off 🎾"}`,
+        ];
+        answer = reportLines.join("\n");
 
-      // Comprehensive tips
-      if (catFood <= 20) tips.push(`🔴 Cat food is low (${catFood}%)`);
-      if (dogFood <= 20) tips.push(`🔴 Dog food is low (${dogFood}%)`);
-      if (waterLow || tankPercent < 10) {
-        tips.push(`🔴 Water is critical (${tankPercent}%)`);
-      }
-      if (dishEmpty) tips.push(`🟡 Water dish is empty`);
-      if (!entertainmentOn) tips.push(`🟡 Entertainment system is off`);
+        // Severity based on priorities
+        if (catFood <= 10 || dogFood <= 10 || waterLow || tankPercent < 10) {
+          severity = "high";
+        } else if (catFood <= 20 || dogFood <= 20 || tankPercent < 30 || dishEmpty) {
+          severity = "medium";
+        } else if (!entertainmentOn) {
+          severity = "medium";
+        } else {
+          severity = "low";
+        }
 
-      // Comprehensive actions
-      if (catFood <= 20) actions.push("Feed cat");
-      if (dogFood <= 20) actions.push("Feed dog");
-      if (waterLow || tankPercent < 10) actions.push("Fill water tank");
-      if (!entertainmentOn) actions.push("Enable entertainment system");
+        // Comprehensive tips
+        if (catFood <= 20) tips.push(`🔴 Cat food is low (${catFood}%)`);
+        if (dogFood <= 20) tips.push(`🔴 Dog food is low (${dogFood}%)`);
+        if (waterLow || tankPercent < 10) tips.push(`🔴 Water is critical (${tankPercent}%)`);
+        if (dishEmpty) tips.push(`🟡 Water dish is empty`);
+        if (!entertainmentOn) tips.push(`🟡 Entertainment system is off`);
+
+        // Comprehensive actions
+        if (catFood <= 20) actions.push("Feed cat");
+        if (dogFood <= 20) actions.push("Feed dog");
+        if (waterLow || tankPercent < 10) actions.push("Fill water tank");
+        if (!entertainmentOn) actions.push("Enable entertainment system");
+      }
     }
 
     if (tips.length === 0) {
-      tips.push("All readings are normal ✅");
+      tips.push(isArabic ? "جميع القراءات طبيعية ✅" : "All readings are normal ✅");
     }
 
     return res.json({
