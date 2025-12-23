@@ -7,7 +7,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/section_header.dart';
-import '../../widgets/severity_chip.dart';
 import '../../widgets/quick_action_button.dart';
 import '../../widgets/status_indicator.dart';
 import '../../widgets/loading_indicator.dart';
@@ -207,20 +206,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_isInitialLoading) {
       return Scaffold(
         appBar: AppBar(
+          titleSpacing: 8,
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
                 child: Image.asset(
                   'assets/images/smartpetcare.jpeg',
-                  height: 32,
-                  width: 32,
+                  height: 28,
+                  width: 28,
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(width: 8),
-              const Text("SmartPetCare"),
+              const SizedBox(width: 6),
+              const Flexible(
+                child: Text(
+                  "SmartPetCare",
+                  style: TextStyle(fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -230,25 +236,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 8,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(6),
               child: Image.asset(
                 'assets/images/smartpetcare.jpeg',
-                height: 32,
-                width: 32,
+                height: 28,
+                width: 28,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(width: 8),
-            const Text("SmartPetCare"),
+            const SizedBox(width: 6),
+            const Flexible(
+              child: Text(
+                "SmartPetCare",
+                style: TextStyle(fontSize: 16),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.smart_toy),
+            icon: const Icon(Icons.smart_toy, size: 22),
             tooltip: "AI Chat",
             onPressed: () => Navigator.push(
               context,
@@ -256,7 +269,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.history, size: 22),
             tooltip: "Logs",
             onPressed: () => Navigator.push(
               context,
@@ -264,7 +277,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, size: 22),
             tooltip: "Refresh",
             onPressed: _loadSummary,
           ),
@@ -292,44 +305,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       bottomNavigationBar: _buildBottomNav(),
-    );
-  }
-
-  Widget _buildSystemSummaryCard() {
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.smart_toy, size: 24),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  "System Summary",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SeverityChip(severity: aiSeverity),
-            ],
-          ),
-          const Divider(height: 24),
-          if (aiLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else
-            Text(
-              aiAnswer.isEmpty ? "Tap refresh to load summary" : aiAnswer,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-        ],
-      ),
     );
   }
 

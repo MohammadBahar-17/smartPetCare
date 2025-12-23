@@ -284,8 +284,8 @@ exports.askAi = onRequest(async (req, res) => {
         if (!entertainmentOn) tips.push(`🟡 نظام الترفيه مغلق`);
 
         // Comprehensive actions in Arabic
-        if (catFood <= 20) actions.push("أطعم القط");
-        if (dogFood <= 20) actions.push("أطعم الكلب");
+        if (catFood <= 20) actions.push("املأ خزان طعام القط");
+        if (dogFood <= 20) actions.push("املأ خزان طعام الكلب");
         if (waterLow || tankPercent < 10) actions.push("املأ خزان الماء");
         if (!entertainmentOn) actions.push("فعّل نظام الترفيه");
       } else {
@@ -324,8 +324,8 @@ exports.askAi = onRequest(async (req, res) => {
         if (!entertainmentOn) tips.push(`🟡 Entertainment system is off`);
 
         // Comprehensive actions
-        if (catFood <= 20) actions.push("Feed cat");
-        if (dogFood <= 20) actions.push("Feed dog");
+        if (catFood <= 20) actions.push("Fill cat food tank");
+        if (dogFood <= 20) actions.push("Fill dog food tank");
         if (waterLow || tankPercent < 10) actions.push("Fill water tank");
         if (!entertainmentOn) actions.push("Enable entertainment system");
       }
