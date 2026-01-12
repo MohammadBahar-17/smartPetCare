@@ -22,6 +22,7 @@ class _WaterScreenState extends State<WaterScreen> {
   bool drainFull = false;
   bool tankFull = false;
   bool isDraining = false;
+  bool drainButtonOn = false;
   bool waterLow = false;
   int tankPercentage = 0;
 
@@ -29,6 +30,7 @@ class _WaterScreenState extends State<WaterScreen> {
   StreamSubscription<DatabaseEvent>? _subSensors;
   StreamSubscription<DatabaseEvent>? _subStatus;
   StreamSubscription<DatabaseEvent>? _subAlerts;
+  StreamSubscription<DatabaseEvent>? _subDrainControl;
 
   bool _isLoading = true;
 
@@ -43,6 +45,7 @@ class _WaterScreenState extends State<WaterScreen> {
     _subSensors?.cancel();
     _subStatus?.cancel();
     _subAlerts?.cancel();
+    _subDrainControl?.cancel();
     super.dispose();
   }
 
@@ -75,6 +78,13 @@ class _WaterScreenState extends State<WaterScreen> {
 
       setState(() {
         waterLow = (data['water_low'] ?? false) == true;
+      });
+    });
+
+    _subDrainControl = _firebase.drainControlStream().listen((event) {
+      if (!mounted) return;
+      setState(() {
+        drainButtonOn = (event.snapshot.value ?? false) == true;
       });
     });
   }
@@ -300,7 +310,7 @@ class _WaterScreenState extends State<WaterScreen> {
           icon: Icons.tune,
         ),
         AppCard(
-          color: isDraining
+          color: drainButtonOn
               ? AppTheme.warningColor.withValues(alpha: 0.1)
               : null,
           child: Column(
@@ -310,14 +320,14 @@ class _WaterScreenState extends State<WaterScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isDraining
+                      color: drainButtonOn
                           ? AppTheme.warningColor.withValues(alpha: 0.2)
                           : Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      isDraining ? Icons.water : Icons.water_drop_outlined,
-                      color: isDraining ? AppTheme.warningColor : Colors.grey,
+                      drainButtonOn ? Icons.water : Icons.water_drop_outlined,
+                      color: drainButtonOn ? AppTheme.warningColor : Colors.grey,
                       size: 32,
                     ),
                   ),
@@ -333,24 +343,24 @@ class _WaterScreenState extends State<WaterScreen> {
                               ),
                         ),
                         Text(
-                          isDraining
-                              ? "Currently draining water..."
+                          drainButtonOn
+                              ? (isDraining ? "Currently draining water..." : "Drain activated")
                               : "Tap to start draining",
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey,
+                                color: drainButtonOn ? AppTheme.warningColor : Colors.grey,
                               ),
                         ),
                       ],
                     ),
                   ),
                   Switch(
-                    value: isDraining,
+                    value: drainButtonOn,
                     onChanged: (value) => _firebase.setDrainControl(value),
                     activeTrackColor: AppTheme.warningColor,
                   ),
                 ],
               ),
-              if (isDraining) ...[
+              if (drainButtonOn) ...[
                 const SizedBox(height: 16),
                 const LinearProgressIndicator(),
               ],

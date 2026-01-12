@@ -114,6 +114,11 @@ class FirebaseService {
     return _db.child("water/alerts").onValue;
   }
 
+  /// Listen to drain control state
+  Stream<DatabaseEvent> drainControlStream() {
+    return _db.child("water/controls/drain_button").onValue;
+  }
+
   /// Toggle drain control
   Future<void> setDrainControl(bool value) {
     return _db.child("water/controls/drain_button").set(value);

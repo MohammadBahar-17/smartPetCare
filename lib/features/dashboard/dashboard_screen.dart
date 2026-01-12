@@ -366,11 +366,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const SectionHeader(title: "Quick Actions", icon: Icons.flash_on),
         SizedBox(
-          height: 90,
+          height: 100,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              const SizedBox(width: 4),
+              const SizedBox(width: 16),
               QuickActionButton(
                 icon: Icons.pets,
                 label: "Feed Cat",
@@ -429,7 +429,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   MaterialPageRoute(builder: (_) => const CameraScreen()),
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 16),
             ],
           ),
         ),
